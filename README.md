@@ -6,8 +6,8 @@ A pt to forward VenRaaS
   
   var myVenraasCode = function() {
 
-   // Here callback, do venraas log here
-    
+  // Here callback, do venraas log here
+  // Reference : https://github.com/VenRaaS/venraaspt/wiki/Using-Javascript-Tracking---'venraaspt'
   
 };
   
