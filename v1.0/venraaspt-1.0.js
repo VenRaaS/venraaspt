@@ -58,7 +58,7 @@ var venraastool = {
 };
 /*venraas string definition*/
 var venstrob = {
-	strrapi: 'apid.venraas.tw:8080/venapis/log',
+	strrapi: 'your.service.domain:8080/venapis/log',
 	stract: 'action',
 	strcrt: 'create',
 	stradd: 'add',
