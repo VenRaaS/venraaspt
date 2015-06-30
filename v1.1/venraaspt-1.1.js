@@ -110,6 +110,7 @@ var vencontrob = {
 		this.setpdata(venact,'referrer',document.referrer);
 		this.setpdata(venact,'client_utc',Date.now());
 		this.setpdata(venact,'client_tzo',(new Date()).getTimezoneOffset());
+		this.setpdata(venact,'c_ga',venraastool.getcookie('_ga'));
 	},
 	pdata: new Object(),
 	creadata: function(_i){
