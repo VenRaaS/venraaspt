@@ -58,7 +58,7 @@ var venraastool = {
 };
 /*venraas string definition*/
 var venstrob = {
-	strserver: 'your.service.domain:8080',
+	strserver: 'apid.venraas.tw:8080',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
 	stract: 'action',
