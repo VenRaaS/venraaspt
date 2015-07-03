@@ -58,7 +58,7 @@ var venraastool = {
 };
 /*venraas string definition*/
 var venstrob = {
-	strserver: 'apid.venraas.tw:8080',
+	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
 	stract: 'action',
@@ -146,7 +146,7 @@ var vencontrob = {
 			);
 		
 		var venraasxhr = xhr();
-		venraasxhr.open("POST","http://"+venstrob.strserver+venstrob.strlogapi,true);
+		venraasxhr.open("POST",('https:' == document.location.protocol ? 'https://' : 'http://')+venstrob.strserver+venstrob.strlogapi,true);
 		venraasxhr.setRequestHeader("Content-type","application/x-www-form-urlencoded;charset=UTF-8");
 		venraasxhr.withCredentials = true;
 
@@ -172,7 +172,7 @@ var venraas = {
 		var venguid = document.createElement('iframe');
 		venguid.setAttribute("id", "venuuid");
 		venguid.style.display = "none";
-		venguid.src = "http://"+venstrob.strserver+venstrob.struuidapi+"?id="+top.location.host;
+		venguid.src = ('https:' == document.location.protocol ? 'https://' : 'http://')+venstrob.strserver+venstrob.struuidapi+"?id="+top.location.host;
 		
 		if(typeof tagID =='undefined'){
 			document.body.appendChild(venguid);
