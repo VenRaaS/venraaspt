@@ -15,7 +15,7 @@ var venraas_script = document.createElement('script');
 venraas_script.type = 'text/javascript'; 
 venraas_script.src = 
   ('https:' == document.location.protocol ? 'https://' : 'http://') + 
-  'lib.venraas.tw/js/venraaspt-1.1.js';
+  'libs.venraas.tw/js/1.0/venraaspt.min.js';
 venraas_script.async = true;
 venraas_script.onreadystatechange = myVenraasLogs;
 venraas_script.onload = myVenraasLogs;
