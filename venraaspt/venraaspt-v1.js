@@ -179,8 +179,8 @@ var venraas = {
 		venguid.style.border ="0px";
 		venguid.style.padding ="0px";
 		venguid.style.margin ="0px";
-		
-		venguid.src = ('https:' == document.location.protocol ? 'https://' : 'http://')+venstrob.strserver+venstrob.struuidapi+"?id="+top.location.host;
+		var _param="?id="+top.location.host+'&pt='+('https:' == document.location.protocol ? 'a' : '');
+		venguid.src = ('https:' == document.location.protocol ? 'https://' : 'http://')+venstrob.strserver+venstrob.struuidapi+_param;
 		
 		if(typeof tagID =='undefined'){
 			document.body.appendChild(venguid);
