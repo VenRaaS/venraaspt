@@ -58,6 +58,7 @@ var venraastool = {
 };
 /*venraas string definition*/
 var venstrob = {
+	v: '1',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -111,6 +112,7 @@ var vencontrob = {
 		this.setpdata(venact,'client_utc',Date.now());
 		this.setpdata(venact,'client_tzo',(new Date()).getTimezoneOffset());
 		this.setpdata(venact,'c_ga',venraastool.getcookie('_ga'));
+		this.setpdata(venact,'ver',venstrob.v);
 	},
 	pdata: new Object(),
 	creadata: function(_i){
@@ -172,6 +174,12 @@ var venraas = {
 		var venguid = document.createElement('iframe');
 		venguid.setAttribute("id", "venuuid");
 		venguid.style.display = "none";
+		venguid.style.width = "1px";
+		venguid.style.height = "1px";
+		venguid.style.border ="0px";
+		venguid.style.padding ="0px";
+		venguid.style.margin ="0px";
+		
 		venguid.src = ('https:' == document.location.protocol ? 'https://' : 'http://')+venstrob.strserver+venstrob.struuidapi+"?id="+top.location.host;
 		
 		if(typeof tagID =='undefined'){
