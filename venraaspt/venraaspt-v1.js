@@ -112,6 +112,7 @@ var vencontrob = {
 		this.setpdata(venact,'client_utc',Date.now());
 		this.setpdata(venact,'client_tzo',(new Date()).getTimezoneOffset());
 		this.setpdata(venact,'c_ga',venraastool.getcookie('_ga'));
+		this.setpdata(venact,'c_utma',venraastool.getcookie('__utma'));
 		this.setpdata(venact,'ver',venstrob.v);
 	},
 	pdata: new Object(),
