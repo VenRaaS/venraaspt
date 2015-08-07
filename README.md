@@ -1,5 +1,5 @@
 # Venraas Page Tag
-A pt to forward VenRaaS
+A page tag to forward VenRaaS
 <pre><code>
 (function() {
   
