@@ -13,7 +13,9 @@ var venstrob = {
 	strall: 'all',
 	strwarn: '[warning] venraas ',
 	strnull: 'ven_null',
-	strdn:'x'
+	strdn:'x',
+	strtypeTracking: '1',
+	strtypeEctrans:'2'
 };
 var venfloctl = new Object();
 
@@ -327,17 +329,17 @@ var venraas = {
 			contr=comd;
 		}
 		
-		if(typeof venfloctl =='undefined'){
-			console.log('debug in venfloctl[] is udefined');
+		if(typeof venfloctl !== 'undefined'){
+			var venfloctl_size= venraastool.object_size(venfloctl);
+			venfloctl[venfloctl_size]={};
+			venfloctl[venfloctl_size]["status"]=false;
+			venfloctl[venfloctl_size]["contr"]=contr;
+			venfloctl[venfloctl_size]["venact"]=venact;
+			venfloctl[venfloctl_size]["objv"]=objv;
+			venfloctl[venfloctl_size]["type"]=venstrob.strtypeTracking;
+			//console.log('debug in venfloctl['+ venfloctl_size+'] '+contr +' '+ venact);
+			this.ven_cps(venfloctl_size);
 		}
-		var venfloctl_size= venraastool.object_size(venfloctl);
-		venfloctl[venfloctl_size]={};
-		venfloctl[venfloctl_size]["status"]=false;
-		venfloctl[venfloctl_size]["contr"]=contr;
-		venfloctl[venfloctl_size]["venact"]=venact;
-		venfloctl[venfloctl_size]["objv"]=objv;
-		this.ven_cps(venfloctl_size);
-
 	},
 	ven_tracking: function(f_idx){
 		//set ven_session if not exists
@@ -347,7 +349,7 @@ var venraas = {
 			venraastool.getvenuuid("s", f_idx);
 		} else {
 			//reset expirestime
-			console.log('debug in re-set venraas session cookie');
+			//console.log('debug in re-set venraas session cookie');
 			venraastool.doCookieSetup("vensession",venraastool.getcookie("vensession"),1800000);
 			//send log
 			//console.log('debug in action controller');
@@ -358,11 +360,21 @@ var venraas = {
 	ven_cps: function(f_idx){
 		
 		if(f_idx == 0 || venfloctl[f_idx-1]["status"] ){
-			console.log('debug in ven_cps: ven_tracking - '+f_idx);
-			venraas.ven_tracking(f_idx);
+			//console.log('debug in ven_cps: ven_tracking - '+f_idx);
+			switch(venfloctl[f_idx]["type"]){
+				case venstrob.strtypeTracking:
+					venraas.ven_tracking(f_idx);
+					break;
+				case venstrob.strtypeEctrans:
+					venraas.ven_ecTransaction(f_idx);
+					break;
+				default:
+					break;
+			}
+			
 		} else{
-			console.log('debug in ven_cps: '+f_idx+' '+ venfloctl[f_idx-1]["status"] );
-			console.log('debug in ven_cps: setTimeout -'+f_idx);
+			//console.log('debug in ven_cps: '+f_idx+' '+ venfloctl[f_idx-1]["status"] );
+			//console.log('debug in ven_cps: setTimeout -'+f_idx);
 			setTimeout("venraas.ven_cps("+f_idx+")",100);
 		}
 	},
@@ -384,6 +396,24 @@ var venraas = {
 			contr=cmdar[1];
 		}
 		
+		if(typeof venfloctl !== 'undefined'){
+			var venfloctl_size= venraastool.object_size(venfloctl);
+			venfloctl[venfloctl_size]={};
+			venfloctl[venfloctl_size]["status"]=false;
+			venfloctl[venfloctl_size]["contr"]=contr;
+			venfloctl[venfloctl_size]["venact"]=venact;
+			venfloctl[venfloctl_size]["objv"]=objv;
+			venfloctl[venfloctl_size]["type"]=venstrob.strtypeEctrans;
+			//console.log('debug in venfloctl['+ venfloctl_size+'] '+contr +' '+ venact);
+			this.ven_cps(venfloctl_size);
+		}
+		
+
+	},
+	ven_ecTransaction: function(f_idx){
+		var contr =venfloctl[f_idx]["contr"];
+		var objv  =venfloctl[f_idx]["objv"];
+		var venact=venfloctl[f_idx]["venact"];
 		switch (contr){
 			case venstrob.stradd:
 				objv['ilist']={};
@@ -400,5 +430,6 @@ var venraas = {
 				console.log(venstrob.strwarn+':input exception. c3');
 				break;
 		}
+		venfloctl[f_idx]["status"]=true;
 	}
 };
