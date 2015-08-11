@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.13',
+	v: '1.14',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -337,6 +337,7 @@ var venraas = {
 			venfloctl[venfloctl_size]["venact"]=venact;
 			venfloctl[venfloctl_size]["objv"]=objv;
 			venfloctl[venfloctl_size]["type"]=venstrob.strtypeTracking;
+			venfloctl[venfloctl_size]["retry"]=0;
 			//console.log('debug in venfloctl['+ venfloctl_size+'] '+contr +' '+ venact);
 			this.ven_cps(venfloctl_size);
 		}
@@ -374,8 +375,12 @@ var venraas = {
 			
 		} else{
 			//console.log('debug in ven_cps: '+f_idx+' '+ venfloctl[f_idx-1]["status"] );
-			//console.log('debug in ven_cps: setTimeout -'+f_idx);
-			setTimeout("venraas.ven_cps("+f_idx+")",100);
+			if(venfloctl[f_idx]["retry"] < 50){
+				venfloctl[f_idx]["retry"]++;
+				//console.log('debug in ven_cps: setTimeout -'+f_idx +' count- '+venfloctl[f_idx]["retry"]);
+				setTimeout("venraas.ven_cps("+f_idx+")",100);
+			}
+			
 		}
 	},
 	ecTransaction: function(comd,objv){
@@ -404,6 +409,7 @@ var venraas = {
 			venfloctl[venfloctl_size]["venact"]=venact;
 			venfloctl[venfloctl_size]["objv"]=objv;
 			venfloctl[venfloctl_size]["type"]=venstrob.strtypeEctrans;
+			venfloctl[venfloctl_size]["retry"]=0;
 			//console.log('debug in venfloctl['+ venfloctl_size+'] '+contr +' '+ venact);
 			this.ven_cps(venfloctl_size);
 		}
