@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.14',
+	v: '1.15',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -121,6 +121,9 @@ var venraastool = {
 			}
 		};
 		thexhr.send();
+	},
+	isarray: function(v){
+		return !!v && typeof v === 'object' && typeof v.length === 'number' && typeof v.splice === 'function' && !(v.propertyIsEnumerable('length'));
 	}
 };
 
@@ -139,13 +142,24 @@ var vencontrob = {
 		}
 	},
 	addrecitemcontr: function(venact,objv){
-		if(typeof this.pdata[venact]['now_rec'] != 'object')
-			this.pdata[venact]['now_rec']={};
-		var x = venraastool.object_size(this.pdata[venact]['now_rec']);
+		//if(typeof this.pdata[venact]['now_rec'] != 'object')
+			//this.pdata[venact]['now_rec']={};
+		//var x = venraastool.object_size(this.pdata[venact]['now_rec']);
+		if(!venraastool.isarray(this.pdata[venact]['now_rec'])){
+			this.pdata[venact]['now_rec']=new Array();
+			//console.log('debug in [now_rec] is new Array');
+		}
+		var x = this.pdata[venact]['now_rec'].length;
+		//console.log('debug in [now_rec] lenght= '+x);
 		this.pdata[venact]['now_rec'][x]=objv;
 	},
 	addtritemcontr: function(venact,objv){
-		var x = venraastool.object_size(this.pdata[venact]['trans_i']['ilist']);
+		if(!venraastool.isarray(this.pdata[venact]['trans_i']['ilist'])){
+			this.pdata[venact]['trans_i']['ilist']=new Array();
+			//console.log('debug in [tran_i][ilist] is new Array');
+		}
+		var x = this.pdata[venact]['trans_i']['ilist'].length;
+		//console.log('debug in [tran_i][ilist] lenght= '+x);
 		this.pdata[venact]['trans_i']['ilist'][x]=objv;
 	},
 	sendcontr: function(venact){
@@ -160,7 +174,7 @@ var vencontrob = {
 	autoretrieve: function (venact){
 		this.setpdata(venact,'para',location.search);
 		this.setpdata(venact,'uri',location.pathname);
-		this.setpdata(venact,'client_host',location.host);
+		this.setpdata(venact,'client_host',venstrob.strdn);
 		this.setpdata(venact,'tophost',top.location.host);
 		this.setpdata(venact,'referrer',document.referrer);
 		this.setpdata(venact,'client_utc',Date.now());
@@ -276,7 +290,8 @@ var venraas = {
 			venstrob.strdn=isetting.domainName;
 		
 		var venguid = document.createElement('iframe');
-		venguid.setAttribute("id", "venuuid");
+		//venguid.setAttribute("id", "venuuid");
+		venguid.style.visibility="hidde";
 		venguid.style.display = "none";
 		venguid.style.width = "1px";
 		venguid.style.height = "1px";
