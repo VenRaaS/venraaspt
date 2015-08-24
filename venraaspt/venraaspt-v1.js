@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.16',
+	v: '1.18',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -231,15 +231,17 @@ var venraastool = {
 		}
 	},
 	doCookieSetup: function (name, value, expirestime) {
-		if(expirestime == 0){
-			document.cookie = name + "=" + escape(value) +";Path=/" + ((venstrob.strdn !== 'x') ? ";domain="+venstrob.strdn:'');
-		}else{
-			var expires = new Date();    
-			// 7 days,  7*24*60*60*1000 = 604800000
-			expires.setTime(expires.getTime() + expirestime);
-			document.cookie = name + "=" + escape(value) + ";expires=" + expires.toGMTString()+";Path=/"+ ((venstrob.strdn !== 'x') ? ";domain="+venstrob.strdn:'');
-			//console.log('debug in doCookieSetup(): done');
-		}
+		try{
+			if(expirestime == 0){
+				document.cookie = name + "=" + escape(value) +";Path=/" + ((venstrob.strdn !== 'x') ? ";domain="+venstrob.strdn:'');
+			}else{
+				var expires = new Date();    
+				// 7 days,  7*24*60*60*1000 = 604800000
+				expires.setTime(expires.getTime() + expirestime);
+				document.cookie = name + "=" + escape(value) + ";expires=" + expires.toGMTString()+";Path=/"+ ((venstrob.strdn !== 'x') ? ";domain="+venstrob.strdn:'');
+				//console.log('debug in doCookieSetup(): done');
+			}
+		} catch(e){}
 	},
 	dect_type: function(comd,objv){
 		if(typeof comd != 'string'){
@@ -329,14 +331,17 @@ var venraastool = {
 				venraasxhr.setRequestHeader("Content-type","application/x-www-form-urlencoded;charset=UTF-8");
 				venraasxhr.withCredentials = true;
 				venraasxhr.onreadystatechange=function(){
-					if (venraasxhr.readyState==4 && venraasxhr.status==200){
-						vencontrob.vencookiecontr(type,venraasxhr.responseText);
-						if(type=="s"){
-							vencontrob.actioncontroller(f_idx);
-						}else {
-							venfloctl[f_idx]["status"]=true;
+					try{
+						if (venraasxhr.readyState==4 && venraasxhr.status==200){
+							vencontrob.vencookiecontr(type,venraasxhr.responseText);
+							if(type=="s"){
+								vencontrob.actioncontroller(f_idx);
+							}else {
+								venfloctl[f_idx]["status"]=true;
+							}
 						}
 					}
+					catch(e){}
 				};
 				venraasxhr.send();
 			}
@@ -404,8 +409,12 @@ var vencontrob = {
 		this.setpdata(venact,'client_host',venstrob.strdn);
 		this.setpdata(venact,'tophost',top.location.host);
 		this.setpdata(venact,'referrer',document.referrer);
-		this.setpdata(venact,'client_utc',Date.now());
-		this.setpdata(venact,'client_tzo',(new Date()).getTimezoneOffset());
+		//IE 8 is not support Date().now()
+		try{
+			this.setpdata(venact,'client_tzo',(new Date()).getTimezoneOffset());
+			this.setpdata(venact,'client_utc',(new Date()).getTime());
+		} catch(e){}
+		
 		this.setpdata(venact,'ven_guid',venraastool.getcookie('venguid'));
 		this.setpdata(venact,'ven_session',venraastool.getcookie('vensession'));
 		/*this.setpdata(venact,'c_ga',venraastool.getcookie('_ga'));
@@ -466,13 +475,16 @@ var vencontrob = {
 					venraasxhr.setRequestHeader("Content-type","application/x-www-form-urlencoded;charset=UTF-8");
 					venraasxhr.withCredentials = true;
 					venraasxhr.onreadystatechange=function(){
-						if (venraasxhr.readyState==4 && venraasxhr.status==200){
-							//console.log('xhr.readyState=',venraasxhr.readyState);
-							//console.log('xhr.status=',venraasxhr.status);
-							//console.log('response=',venraasxhr.responseText);
-							//delete obj console.log('send log...'+venact);
-							vencontrob.delpdata(_idx);
+						try{
+							if (venraasxhr.readyState==4 && venraasxhr.status==200){
+								//console.log('xhr.readyState=',venraasxhr.readyState);
+								//console.log('xhr.status=',venraasxhr.status);
+								//console.log('response=',venraasxhr.responseText);
+								//delete obj console.log('send log...'+venact);
+								vencontrob.delpdata(_idx);
+							}
 						}
+						catch(e){}
 					};
 					//console.log('debug in xhr send');
 					venraasxhr.send(p_str);
