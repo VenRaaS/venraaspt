@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.18',
+	v: '1.19',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -21,202 +21,6 @@ var venstrob = {
 	venfloctl_processing:''
 };
 var venfloctl = new Object();
-
-/*application interface of venraas usage*/
-var venraas = {
-	init: function(isetting){
-		try{
-			if(typeof isetting !=='undefined' && typeof isetting.domainName !=='undefined')
-				venstrob.strdn=isetting.domainName;
-			
-			var ck_iframe = document.getElementById('venraasfr');
-			if(ck_iframe === null){
-				var venguid = document.createElement('iframe');
-				venguid.setAttribute('id','venraasfr');
-				venguid.style.display = "none";
-				venguid.style.width = "1px";
-				venguid.style.height = "1px";
-				venguid.style.border ="0px";
-				venguid.style.padding ="0px";
-				venguid.style.margin ="0px";
-				venguid.src = 'https://'+venstrob.strserver+venstrob.struuidapi;
-				
-				if(typeof isetting =='undefined' || typeof isetting.tagID == 'undefined'){
-					document.body.appendChild(venguid);
-					//console.log('here is init with body');
-				}
-				else{
-					if(document.getElementById(isetting.tagID) !== null){
-						//console.log('here is init with specific tag');
-						document.getElementById(isetting.tagID).appendChild(venguid);
-					}
-					else{
-						console.log('[Error] venraas document.getElementById('+isetting.tagID+') is not exist!');
-					}
-				}
-			}
-			
-			//set ven_guid if not exists
-			if(venraastool.getcookie("venguid") == ""){
-				if(typeof venfloctl !== 'undefined'){
-					var venfloctl_size= venraastool.object_size(venfloctl);
-					venfloctl[venfloctl_size]={};
-					venfloctl[venfloctl_size]["status"]=false;
-					venfloctl[venfloctl_size]["contr"]="";
-					venfloctl[venfloctl_size]["venact"]="";
-					venfloctl[venfloctl_size]["objv"]="";
-					venfloctl[venfloctl_size]["type"]=venstrob.strtypeGuid;
-					venfloctl[venfloctl_size]["retry"]=0;
-					this.ven_cps(venfloctl_size);
-				}
-				//venraastool.getvenuuid("g");
-			}
-		}
-		catch(e){}
-	},
-	tracking: function(comd,objv){
-		try{
-			//console.log("debug in "+comd);
-			//injection detection
-			
-			//type detection
-			if(typeof objv =='undefined') 
-				objv={};
-			if(venraastool.dect_type(comd,objv) == false)
-				return ;
-
-			//action routing
-			var venact='';
-			var contr='';
-			if(comd.indexOf('|') > -1){
-				cmdar=comd.split('|');
-				venact=cmdar[0];
-				contr=cmdar[1];
-			} else{
-				venact=venstrob.strall;
-				contr=comd;
-			}
-			
-			if(typeof venfloctl !== 'undefined'){
-				var venfloctl_size= venraastool.object_size(venfloctl);
-				venfloctl[venfloctl_size]={};
-				venfloctl[venfloctl_size]["status"]=false;
-				venfloctl[venfloctl_size]["contr"]=contr;
-				venfloctl[venfloctl_size]["venact"]=venact;
-				venfloctl[venfloctl_size]["objv"]=objv;
-				venfloctl[venfloctl_size]["type"]=venstrob.strtypeTracking;
-				venfloctl[venfloctl_size]["retry"]=0;
-				//console.log('debug in venfloctl['+ venfloctl_size+'] '+contr +' '+ venact);
-				this.ven_cps(venfloctl_size);
-			}
-		}
-		catch(e){}
-		
-		
-	},
-	ven_tracking: function(f_idx){
-		//set ven_session if not exists
-		if(venraastool.getcookie("vensession") == ""){
-			//console.log('debug in vesession is not exist');
-			//if session not exist, ask a session value first, then send log later. 
-			venraastool.getvenuuid("s", f_idx);
-		} else {
-			//reset expirestime
-			//console.log('debug in re-set venraas session cookie');
-			venraastool.doCookieSetup("vensession",venraastool.getcookie("vensession"),1800000);
-			//send log
-			//console.log('debug in action controller');
-			vencontrob.actioncontroller(f_idx);
-			
-		}
-	},
-	ven_cps: function(f_idx){
-		try{
-			if(f_idx == 0 || venfloctl[f_idx-1]["status"] ){
-				//console.log('debug in ven_cps: ven_tracking - '+f_idx);
-				switch(venfloctl[f_idx]["type"]){
-					case venstrob.strtypeTracking:
-						venraas.ven_tracking(f_idx);
-						break;
-					case venstrob.strtypeEctrans:
-						venraas.ven_ecTransaction(f_idx);
-						break;
-					case venstrob.strtypeGuid:
-						venraastool.getvenuuid("g",f_idx);
-						break;
-					default:
-						break;
-				}
-				
-			} else{
-				//console.log('debug in ven_cps: '+f_idx+' '+ venfloctl[f_idx-1]["status"] );
-				if(venfloctl[f_idx]["retry"] < 50){
-					venfloctl[f_idx]["retry"]++;
-					//console.log('debug in ven_cps: setTimeout -'+f_idx +' count- '+venfloctl[f_idx]["retry"]);
-					setTimeout("venraas.ven_cps("+f_idx+")",100);
-				}
-				
-			}
-		}
-		catch(e){}
-	},
-	ecTransaction: function(comd,objv){
-		try{
-			//injection detection
-			//type detection
-			if(typeof objv =='undefined') 
-				objv={};
-			if(venraastool.dect_type(comd,objv) == false)
-				return ;
-				
-			//action routing
-			var venact='';
-			var contr='';
-			if(comd.indexOf('|') > -1){
-				cmdar=comd.split('|');
-				venact=cmdar[0];
-				contr=cmdar[1];
-			}
-			
-			if(typeof venfloctl !== 'undefined'){
-				var venfloctl_size= venraastool.object_size(venfloctl);
-				venfloctl[venfloctl_size]={};
-				venfloctl[venfloctl_size]["status"]=false;
-				venfloctl[venfloctl_size]["contr"]=contr;
-				venfloctl[venfloctl_size]["venact"]=venact;
-				venfloctl[venfloctl_size]["objv"]=objv;
-				venfloctl[venfloctl_size]["type"]=venstrob.strtypeEctrans;
-				venfloctl[venfloctl_size]["retry"]=0;
-				//console.log('debug in venfloctl['+ venfloctl_size+'] '+contr +' '+ venact);
-				this.ven_cps(venfloctl_size);
-			}
-		}
-		catch(e){}
-	},
-	ven_ecTransaction: function(f_idx){
-		var contr =venfloctl[f_idx]["contr"];
-		var objv  =venfloctl[f_idx]["objv"];
-		var venact=venfloctl[f_idx]["venact"];
-		switch (contr){
-			case venstrob.stradd:
-				objv['ilist']={};
-				var trans_objv=new Object();
-				trans_objv['trans_i']=objv;
-				vencontrob.addcontr(venact,trans_objv);
-				break;
-				
-			case venstrob.stradi:
-				vencontrob.addtritemcontr(venact,objv);
-				break;
-				
-			default:
-				console.log(venstrob.strwarn+':input exception. c3');
-				break;
-		}
-		venfloctl[f_idx]["status"]=true;
-	}
-};
-
 var venraastool = {
 	/** a function to retrieve cookie value for venraas log**/
 	getcookie: function (name){
@@ -550,4 +354,199 @@ function vengujsonpcallbk(type,data){
 	}
 	catch(e){}
 
+};
+
+/*application interface of venraas usage*/
+var venraas = {
+	init: function(isetting){
+		try{
+			if(typeof isetting !=='undefined' && typeof isetting.domainName !=='undefined')
+				venstrob.strdn=isetting.domainName;
+			
+			var ck_iframe = document.getElementById('venraasfr');
+			if(ck_iframe === null){
+				var venguid = document.createElement('iframe');
+				venguid.setAttribute('id','venraasfr');
+				venguid.style.display = "none";
+				venguid.style.width = "1px";
+				venguid.style.height = "1px";
+				venguid.style.border ="0px";
+				venguid.style.padding ="0px";
+				venguid.style.margin ="0px";
+				venguid.src = 'https://'+venstrob.strserver+venstrob.struuidapi;
+				
+				if(typeof isetting =='undefined' || typeof isetting.tagID == 'undefined'){
+					document.body.appendChild(venguid);
+					//console.log('here is init with body');
+				}
+				else{
+					if(document.getElementById(isetting.tagID) !== null){
+						//console.log('here is init with specific tag');
+						document.getElementById(isetting.tagID).appendChild(venguid);
+					}
+					else{
+						console.log('[Error] venraas document.getElementById('+isetting.tagID+') is not exist!');
+					}
+				}
+			}
+			
+			//set ven_guid if not exists
+			if(venraastool.getcookie("venguid") == ""){
+				if(typeof venfloctl !== 'undefined'){
+					var venfloctl_size= venraastool.object_size(venfloctl);
+					venfloctl[venfloctl_size]={};
+					venfloctl[venfloctl_size]["status"]=false;
+					venfloctl[venfloctl_size]["contr"]="";
+					venfloctl[venfloctl_size]["venact"]="";
+					venfloctl[venfloctl_size]["objv"]="";
+					venfloctl[venfloctl_size]["type"]=venstrob.strtypeGuid;
+					venfloctl[venfloctl_size]["retry"]=0;
+					this.ven_cps(venfloctl_size);
+				}
+				//venraastool.getvenuuid("g");
+			}
+		}
+		catch(e){}
+	},
+	tracking: function(comd,objv){
+		try{
+			//console.log("debug in "+comd);
+			//injection detection
+			
+			//type detection
+			if(typeof objv =='undefined') 
+				objv={};
+			if(venraastool.dect_type(comd,objv) == false)
+				return ;
+
+			//action routing
+			var venact='';
+			var contr='';
+			if(comd.indexOf('|') > -1){
+				cmdar=comd.split('|');
+				venact=cmdar[0];
+				contr=cmdar[1];
+			} else{
+				venact=venstrob.strall;
+				contr=comd;
+			}
+			
+			if(typeof venfloctl !== 'undefined'){
+				var venfloctl_size= venraastool.object_size(venfloctl);
+				venfloctl[venfloctl_size]={};
+				venfloctl[venfloctl_size]["status"]=false;
+				venfloctl[venfloctl_size]["contr"]=contr;
+				venfloctl[venfloctl_size]["venact"]=venact;
+				venfloctl[venfloctl_size]["objv"]=objv;
+				venfloctl[venfloctl_size]["type"]=venstrob.strtypeTracking;
+				venfloctl[venfloctl_size]["retry"]=0;
+				//console.log('debug in venfloctl['+ venfloctl_size+'] '+contr +' '+ venact);
+				this.ven_cps(venfloctl_size);
+			}
+		}
+		catch(e){}
+		
+		
+	},
+	ven_tracking: function(f_idx){
+		//set ven_session if not exists
+		if(venraastool.getcookie("vensession") == ""){
+			//console.log('debug in vesession is not exist');
+			//if session not exist, ask a session value first, then send log later. 
+			venraastool.getvenuuid("s", f_idx);
+		} else {
+			//reset expirestime
+			//console.log('debug in re-set venraas session cookie');
+			venraastool.doCookieSetup("vensession",venraastool.getcookie("vensession"),1800000);
+			//send log
+			//console.log('debug in action controller');
+			vencontrob.actioncontroller(f_idx);
+			
+		}
+	},
+	ven_cps: function(f_idx){
+		try{
+			if(f_idx == 0 || venfloctl[f_idx-1]["status"] ){
+				//console.log('debug in ven_cps: ven_tracking - '+f_idx);
+				switch(venfloctl[f_idx]["type"]){
+					case venstrob.strtypeTracking:
+						venraas.ven_tracking(f_idx);
+						break;
+					case venstrob.strtypeEctrans:
+						venraas.ven_ecTransaction(f_idx);
+						break;
+					case venstrob.strtypeGuid:
+						venraastool.getvenuuid("g",f_idx);
+						break;
+					default:
+						break;
+				}
+				
+			} else{
+				//console.log('debug in ven_cps: '+f_idx+' '+ venfloctl[f_idx-1]["status"] );
+				if(venfloctl[f_idx]["retry"] < 3){
+					venfloctl[f_idx]["retry"]++;
+					//console.log('debug in ven_cps: setTimeout -'+f_idx +' count- '+venfloctl[f_idx]["retry"]);
+					setTimeout("venraas.ven_cps("+f_idx+")",100);
+				}
+				
+			}
+		}
+		catch(e){}
+	},
+	ecTransaction: function(comd,objv){
+		try{
+			//injection detection
+			//type detection
+			if(typeof objv =='undefined') 
+				objv={};
+			if(venraastool.dect_type(comd,objv) == false)
+				return ;
+				
+			//action routing
+			var venact='';
+			var contr='';
+			if(comd.indexOf('|') > -1){
+				cmdar=comd.split('|');
+				venact=cmdar[0];
+				contr=cmdar[1];
+			}
+			
+			if(typeof venfloctl !== 'undefined'){
+				var venfloctl_size= venraastool.object_size(venfloctl);
+				venfloctl[venfloctl_size]={};
+				venfloctl[venfloctl_size]["status"]=false;
+				venfloctl[venfloctl_size]["contr"]=contr;
+				venfloctl[venfloctl_size]["venact"]=venact;
+				venfloctl[venfloctl_size]["objv"]=objv;
+				venfloctl[venfloctl_size]["type"]=venstrob.strtypeEctrans;
+				venfloctl[venfloctl_size]["retry"]=0;
+				//console.log('debug in venfloctl['+ venfloctl_size+'] '+contr +' '+ venact);
+				this.ven_cps(venfloctl_size);
+			}
+		}
+		catch(e){}
+	},
+	ven_ecTransaction: function(f_idx){
+		var contr =venfloctl[f_idx]["contr"];
+		var objv  =venfloctl[f_idx]["objv"];
+		var venact=venfloctl[f_idx]["venact"];
+		switch (contr){
+			case venstrob.stradd:
+				objv['ilist']={};
+				var trans_objv=new Object();
+				trans_objv['trans_i']=objv;
+				vencontrob.addcontr(venact,trans_objv);
+				break;
+				
+			case venstrob.stradi:
+				vencontrob.addtritemcontr(venact,objv);
+				break;
+				
+			default:
+				console.log(venstrob.strwarn+':input exception. c3');
+				break;
+		}
+		venfloctl[f_idx]["status"]=true;
+	}
 };
