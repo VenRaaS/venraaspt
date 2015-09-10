@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.19',
+	v: '1.20',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -14,6 +14,7 @@ var venstrob = {
 	strwarn: '[warning] venraas ',
 	strnull: 'ven_null',
 	strdn:'x',
+	strtoken:'x',
 	strtypeInit: '0',
 	strtypeTracking: '1',
 	strtypeEctrans:'2',
@@ -211,6 +212,7 @@ var vencontrob = {
 		this.setpdata(venact,'para',location.search);
 		this.setpdata(venact,'uri',location.pathname);
 		this.setpdata(venact,'client_host',venstrob.strdn);
+		this.setpdata(venact,'token',venstrob.strtoken);
 		this.setpdata(venact,'tophost',top.location.host);
 		this.setpdata(venact,'referrer',document.referrer);
 		//IE 8 is not support Date().now()
@@ -362,6 +364,8 @@ var venraas = {
 		try{
 			if(typeof isetting !=='undefined' && typeof isetting.domainName !=='undefined')
 				venstrob.strdn=isetting.domainName;
+			if(typeof isetting !=='undefined' && typeof isetting.token !=='undefined')
+				venstrob.strtoken=isetting.token;
 			
 			var ck_iframe = document.getElementById('venraasfr');
 			if(ck_iframe === null){
