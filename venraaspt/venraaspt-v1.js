@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.20',
+	v: '1.21',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -287,7 +287,7 @@ var vencontrob = {
 								//console.log('xhr.status=',venraasxhr.status);
 								//console.log('response=',venraasxhr.responseText);
 								//delete obj console.log('send log...'+venact);
-								vencontrob.delpdata(_idx);
+								//vencontrob.delpdata(_idx);
 							}
 						}
 						catch(e){}
