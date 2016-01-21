@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>VenRaasPT Test</title>
+  <meta charset="UTF-8">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+  <script> 
+  // Demo 頁使用控制元件, 不須參考
+  var venraas_script2 = document.createElement('script');
+  venraas_script2.type = 'text/javascript';
+  venraas_script2.src = 'ventest_fn.js?_='+(new Date()).getTime();
+  var head = document.getElementsByTagName('head')[0];
+  head.appendChild(venraas_script2);
+  
+  </script>
+  
+</head>
+<body>
+<h1>商品頁-1</h1>
+<a href="#" onclick="clickToHref('main.html')">首頁Page</a>			
+<a href="#" onclick="clickToHref('cartload.html')">購物車Page</a>			
+<a href="#" onclick="clickToHref('Total.html')">All Action Page</a>			
+<a href="#" onclick="clickToHref('product-1.html')">Product-1 Page</a>			
+<br /><br />
+<input id='checkVenraas' type='button' value='check Venraas'>
+<br /><br />
+<input id='killVenraas' type='button' value='kill Venraas'>
+<br /><br />
+<input id='addcart' type='button' value='add cart'>
+<br /><br />
+<input id='add_wish' type='button' value='add wish'>
+
+
+<script>
+
+var creatVenraasScript_fn = function (Obj) {
+	
+	(function (Obj) {
+		var myVenraasLogs = function () {
+			try{
+				//Require initial your domain name
+				venraas.init({'domainName':'.venraas.tw','token':'rMUyBRrrpL'});
+				
+				//callback, DO TRACKING LOG HERE
+				venraas.tracking(Obj.action1 + '|' + Obj.doit1, {
+					'autosend' : false,             //(是否自動送出資料)
+					'uid' : Obj.uid,                //Require    //(加密的user id)
+					'cc_session' : Obj.cc_session,  //Require    //暫定從他們給的cooke name來...我先用null處理
+					'cc_guid' : Obj.cc_guid,        //Require    //暫定從他們給的cooke name來...我先用null處理
+					'categ_le' : Obj.categ_le,      //Optional   //(目錄階層類別:首頁1 大目錄2 中目錄3 小目錄4 其他null)
+					'categ_code' : Obj.categ_code,  //Require    //(cid)
+					'gid' : Obj.gid,                //Require    //(pid)
+					'from_rec' : null,      //Require    //商品頁才會有目錄頁都先帶null
+					'page_type' : Obj.page_type,    //Optional   //(頁面類型)(有提供參數表)
+					'device' : Obj.device,          //Optional   //(使用載具類型)(有提供參數表) 暫時固定指定大網
+					'web' : null                    //Optional   //(web都帶null)
+				});
+
+				//最後記得送出log
+				venraas.tracking(Obj.action2 + '|' + Obj.doit2);
+				console.log("Debug in myVenraasLogs() done");
+			}catch(e){console.log("Debug in myVenraasLogs() Exception:" +e+", Do Nothing~");}
+		};
+
+		try{
+			var venraas_dt= Math.floor((new Date()).getTime()/86400000);
+			var venraas_script = document.createElement('script');
+			venraas_script.type = 'text/javascript';
+			venraas_script.src = 'https://libs-alt.venraas.tw/js/venraaspt.min.js?_='+venraas_dt;
+			venraas_script.async = true;
+
+			// Handle Script loading
+			var venraas_script_done = false;
+			venraas_script.onload = venraas_script.onreadystatechange = function() {
+			if(typeof this.readyState !== 'undefined')
+				console.log('debug in onreadystatechange():' + this.readyState);
+			if ( !venraas_script_done && (this.readyState === "loaded" || this.readyState === "complete" || !this.readyState) ) {
+					venraas_script_done = true;
+					console.log('debug in onreadystatechange() is on ready loaded status');
+					myVenraasLogs(); 
+					venraas_script.onload = venraas_script.onreadystatechange = null;
+				}
+			};
+
+			var head = document.getElementsByTagName('head')[0];
+			if(head){  
+				head.appendChild(venraas_script);
+				console.log("Debug in head append the script: venraaspt.min.js");
+			}
+		}
+		catch(e){ console.log("Debug in creatVenraasScript_fn() Exception:" +e+", Do Nothing~"); }
+
+	})(Obj);
+};
+
+//fot venraas 加入購物車的方法
+function forVenraasAddCart_fn() {
+	console.log('click start forVenraasAddCart_fn()');
+	try{
+		if(typeof venraas != 'undefined'){
+			venraas.tracking('cartadd|create',{
+				'uid': '',          //Require if user login
+				'cc_session': '',  //Optional
+				'cc_guid': '',        //Optional
+				'gid': '',          //Require  (主商品)
+				'sub_gid':'',         //Optional (組合商品)
+				'from_rec':''        //Requir
+			});
+		} else {
+			console.log("Debug in forVenraasAddCart_fn(): venraas is undefined, Do Nothing~");
+		}
+
+	}catch(e){ console.log("Debug in forVenraasAddCart_fn() catch Exception"); console.log( e); }
+
+	console.log('forVenraasAddCart_fn() Done');
+	
+};
+
+//fot venraas 加入追蹤清單的方法
+function forVenraasAddWishList_fn() {
+	console.log('click start forVenraasAddWishList_fn()');
+	try{
+		if(typeof venraas != 'undefined'){
+			venraas.tracking('favadd|create',{
+				'uid': '',
+				'cc_session': '',
+				'cc_guid': '',
+				'categ_code': '',
+				'gid': '',
+				'from_rec':''
+			});
+		} else {
+			console.log("Debug in forVenraasAddWishList_fn(): venraas is undefined, Do Nothing~");
+		}
+
+	}catch(e){ console.log("Debug in forVenraasAddWishList_fn() catch Exception"); console.log( e); }
+	
+	console.log('forVenraasAddWishList_fn() Done');
+};
+
+$(function(){
+
+	//延遲初始化
+	setTimeout(function() {
+		var venraasObj = {
+			'uid' : null,
+			'categ_le' : null, //(目錄階層類別:首頁1 大目錄2 中目錄3 小目錄4 其他null)
+			'categ_code' : null,
+			'page_type' : 'gop',
+			'device' : 'pc',
+			'gid' : null,
+			'action1' : 'pageload',
+			'doit1' : 'create',
+			'action2' : 'pageload',
+			'doit2' : 'send'
+		}
+		creatVenraasScript_fn(venraasObj);
+	}, 100);
+	
+
+	//立刻買按鈕
+	$("#addcart").click(function(){
+		forVenraasAddCart_fn();
+	});
+	
+	//加入追蹤清單按鈕
+	$("#add_wish").click(function() {
+		forVenraasAddWishList_fn()
+	});
+	
+	$("#checkVenraas").click(function(){
+		if(typeof venraas === 'undefined'){
+			console.log('venraas object not exist!');
+		} else {
+			console.log('venraas object exist. The version now is v'+venstrob.v);
+			
+		}
+	});
+	
+	
+	$("#killVenraas").click(function(){
+		if(typeof venraas !== 'undefined'){
+			delete venraas;
+			console.log('delete venraas object!');
+		}
+	});
+	
+	
+});
+
+
+</script>
+
+
+
+</body>
+</html>

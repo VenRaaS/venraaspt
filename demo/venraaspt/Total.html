@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My First HTML</title>
+  <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+  <script> 
+  // Demo 頁使用控制元件, 不須參考
+  var venraas_script2 = document.createElement('script');
+  venraas_script2.type = 'text/javascript';
+  venraas_script2.src = 'ventest_fn.js?_='+(new Date()).getTime();
+  var head = document.getElementsByTagName('head')[0];
+  head.appendChild(venraas_script2);
+  
+  </script>
+</head>
+<body>
+<h1>呼叫全部action</h1>
+<a href="#" onclick="clickToHref('main.html')">首頁Page</a>			
+<a href="#" onclick="clickToHref('cartload.html')">購物車Page</a>			
+<a href="#" onclick="clickToHref('Total.html')">All Action Page</a>			
+<a href="#" onclick="clickToHref('product-1.html')">Product-1 Page</a>			
+<script>
+
+
+
+(function() {
+  var myVenraasLogs = function() {
+    try{
+      venraas.init({'domainName':'.venraas.tw','token':'rMUyBRrrpL'});  //init() is Required for each page loading
+
+venraas.tracking('pageload|create',{
+  'autosend':false,
+  'uid':'${client id}',               //Require if user login
+  'cc_session':'${ session}',         //Optional
+  'cc_guid':'${global unique id}',    //Optional
+  'categ_le':'${category level}',     //Optional
+  'categ_code':'${category id}',      //Require in goods page and category page
+  'gid':'${product/goods id}',        //Require in goods page
+  'from_rec':'${this page is from referrer page’s recommendation id}', //Require for evaluation
+  'page_type':'${page type}',         //Optional
+  'device':'${device type}',          //Optional
+  'web':'${web service id}'           //Optional
+});
+
+
+venraas.tracking('pageload|add_rec',{
+    'rec':'${recomd id}',                  //Require
+    'rec_name':'${recomd_field name}',     //Optional
+    'list':'${goods id},${goods id},...'   //Optional
+  });
+
+
+//Don't forget to send the log in final
+//最後記得送出log.
+venraas.tracking('pageload|send');
+
+//==================
+venraas.tracking('pageload|create',{
+  'autosend':false,
+  'uid':'${client id}',               //Require if user login
+  'cc_session':'${ session}',         //Optional
+  'cc_guid':'${global unique id}',    //Optional
+  'categ_le':'${category level}',     //Optional
+  'categ_code':'${category id}',      //Require in goods page and category page
+  'gid':'${product/goods id}',        //Require in goods page
+  'from_rec':'${this page is from referrer page’s recommendation id}', //Require for evaluation
+  'page_type':'${page type}',         //Optional
+  'device':'${device type}',          //Optional
+  'web':'${web service id}'           //Optional
+});
+
+
+  venraas.tracking('pageload|add_rec',{
+    'rec':'${recomd id}',                  //Require
+    'rec_name':'${recomd_field name}',     //Optional
+    'list':'${goods id},${goods id},...'   //Optional
+  });
+  venraas.tracking('pageload|add_rec',{
+    'rec':'${recomd id}',                  //Require
+    'rec_name':'${recomd_field name}',     //Optional
+    'list':'${goods id},${goods id},...'   //Optional
+  });
+  venraas.tracking('pageload|add_rec',{
+    'rec':'${recomd id}',                  //Require
+    'rec_name':'${recomd_field name}',     //Optional
+    'list':'${goods id},${goods id},...'   //Optional
+  });
+
+
+//Don't forget to send the log in final
+//最後記得送出log.
+venraas.tracking('pageload|send');
+//==================
+
+venraas.tracking('cartload|create',{
+  'autosend':false,
+  'uid':'${client id}',            //Require
+  'cc_session':'${session}',       //Optional
+  'cc_guid':'${global unique id}', //Optional
+  'page_type':'scp',          
+  'device':'${device type}',       //Optional
+  'web':'${web service id}'        //Optional
+});
+
+venraas.ecTransaction('cartload|add',{
+  'id':'${cart id}'               //Require if cart id exist Or let it be blank like this( 'id':'')
+});
+
+
+  venraas.ecTransaction('cartload|add_item',{
+    'id':'${product/goods id}',         //Require
+    'from_rec':'${recommendation id_1},${recommendation id_2},...',  // Optional, Ref PS.If you don't record values 
+    'rec_name':'${name of recommendation field}'                     // Optional
+  });
+    venraas.ecTransaction('cartload|add_item',{
+    'id':'${product/goods id}',         //Require
+    'from_rec':'${recommendation id_1},${recommendation id_2},...',  // Optional, Ref PS.If you don't record values 
+    'rec_name':'${name of recommendation field}'                     // Optional
+  });
+    venraas.ecTransaction('cartload|add_item',{
+    'id':'${product/goods id}',         //Require
+    'from_rec':'${recommendation id_1},${recommendation id_2},...',  // Optional, Ref PS.If you don't record values 
+    'rec_name':'${name of recommendation field}'                     // Optional
+  });
+
+venraas.tracking('cartload|send');
+
+
+//==================
+venraas.tracking('checkout|create',{
+  'autosend':false,
+  'uid':'${client id}',            //Require
+  'cc_session':'${ session}',      //Optional
+  'cc_guid':'${global unique id}', //Optional
+  'page_type':'orp',
+  'device':'${device type}',       //Optional
+  'web':'${web service id}'        //Optional
+});
+
+venraas.ecTransaction('checkout|add',{
+  'id':'${order id if exists}'     //Require
+});
+
+ venraas.ecTransaction('checkout|add_item',{
+    'id':'${product/goods id}',    //Require
+    'from_rec':'${recommendation id_1},${recommendation id_2},...',  // Optional, Ref PS.If you don't record values 
+    'rec_name':'${name of recommendation field}'                     // Optional
+  });
+
+venraas.tracking('checkout|send');
+
+//==================
+venraas.tracking('cartadd|create',{
+  'uid':'${client id}',               //Require if user login
+  'cc_session':'${session}',          //Optional
+  'cc_guid':'${global unique id}',    //Optional
+  'gid':'${product/goods id}',        //Require 
+  'sub_gid':'${goods id},${goods id},...',   //Optional
+  'from_rec':'${this page is from referrer page’s recommendation id}'   //Require
+});
+
+
+
+
+//==================
+venraas.tracking('cartrm|create',{
+  'uid':'${client id}',
+  'cc_session':'${session}',
+  'cc_guid':'${global unique id}',
+  'categ_code':'${category id}',
+  'gid':'${product/goods id}',
+  'from_rec':'${this page is from referrer page’s recommendation id}'
+});
+
+
+//==================
+
+venraas.tracking('favadd|create',{
+'uid':'${client id}',
+'cc_session':'${session}',
+'cc_guid':'${global unique id}',
+'categ_code':'${category id}',
+'gid':'${product/goods id}',
+'from_rec':'${this page is from referrer page’s recommendation id}'
+});
+
+//==================
+venraas.tracking('favrm|create',{
+  'uid':'${client id}',
+  'cc_session':'${session}',
+  'cc_guid':'${global unique id}',
+  'categ_code':'${category id}',
+  'gid':'${product/goods id}',
+  'from_rec':'${this page is from referrer page’s recommendation id}'
+});
+
+
+//==================
+venraas.tracking('pageload|create',{
+  'uid':'${client id}',               //Require if user login
+  'cc_session':'${ session}',         //Optional
+  'cc_guid':'${global unique id}',    //Optional
+  'categ_le':'${category level}',     //Optional
+  'categ_code':'${category id}',      //Require in goods page and category page
+  'gid':'${product/goods id}',        //Require in goods page
+  'from_rec':'${this page is from referrer page’s recommendation id}', //Require for evaluation
+  'page_type':'${page type}',         //Optional
+  'device':'${device type}',          //Optional
+  'web':'${web service id}'           //Optional
+});
+      
+    
+    }catch(e){console.log("Debug in myVenraasLogs() Exception:" +e+", Do Nothing~");}
+  };
+  try{
+    var venraas_dt= Math.floor((new Date()).getTime()/86400000);
+    var venraas_script = document.createElement('script');
+    venraas_script.type = 'text/javascript';
+    venraas_script.src = 'https://libs-alt.venraas.tw/js/venraaspt.min.js?_='+venraas_dt;
+    venraas_script.async = true;
+
+    // Handle Script loading
+    var venraas_script_done = false;
+    venraas_script.onload = venraas_script.onreadystatechange = function() {
+     if ( !venraas_script_done && (this.readyState === "loaded" || this.readyState === "complete" || !this.readyState) ) {
+        venraas_script_done = true;
+        myVenraasLogs(); 
+        venraas_script.onload = venraas_script.onreadystatechange = null;
+      }
+    };
+
+    var head = document.getElementsByTagName('head')[0];
+    if(head){  
+      head.appendChild(venraas_script);
+    }
+
+  }
+  catch(e){console.log("Debug in Exception:" +e+", Do Nothing~");}
+
+})();
+
+
+</script>
+
+</body>
+</html>
