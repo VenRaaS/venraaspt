@@ -1,29 +1,4 @@
 # Venraas Page Tag
-VenRaaS page tag 
-<pre><code>
-(function() {
-  
-  
-  var myVenraasLogs = function() {
-    venraas.init_uuid();
-    // Here callback, do venraas log here
-    // Reference : https://github.com/VenRaaS/venraaspt/wiki/Using-Javascript-Tracking---'venraaspt'
-  
-};
-  
-var venraas_script = document.createElement('script'); 
-venraas_script.type = 'text/javascript'; 
-venraas_script.src = 
-  ('https:' == document.location.protocol ? 'https://' : 'http://') + 
-  'libs.venraas.tw/js/venraaspt.min.js';
-venraas_script.async = true;
-venraas_script.onreadystatechange = myVenraasLogs;
-venraas_script.onload = myVenraasLogs;
+WIKI : https://github.com/VenRaaS/venraas-user-guide/wiki/page-tagging
+Latest version:  http://lib.venraas.tw/js/venraaspt.min.js
 
-var head = document.getElementsByTagName('head')[0];
-head.appendChild(venraas_script);
-  
-
- 
- })();
-</code></pre>
