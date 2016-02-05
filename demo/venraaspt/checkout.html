@@ -5,10 +5,10 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--load jquery-->	
-    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.4.min.js"></script>
-	
-	<!--load Bootstrap -->
+	<!--load jquery-->	
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.4.min.js">
+    </script>
+    <!-- Bootstrap -->
     <!-- 最新編譯和最佳化的 CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" type="text/css">
 	
@@ -31,9 +31,8 @@
 		.input-group{
 			padding: 5px 0;
 		}
-		h2 {display:inline};	
+		h2 {display:inline};		
     </style>
-	
     <script> 
 		// Demo 頁使用控制元件, 不須參考
 		var venraas_script2 = document.createElement('script');
@@ -49,9 +48,9 @@
     <div class="container-fluid">
         <div class="row-fluid">
             
-            <!--/span -->
+            <!--/span-->
             <div class="col-md-12">
-			    <div class="jumbotron">
+                <div class="jumbotron">
                     <h1><strong>VenRaas Weblog 測試網頁</strong></h1>
 
                     <p>請選擇您要執行測試的頁面</p>
@@ -59,13 +58,13 @@
                 <div class="col-md-12">
                 <div class="well sidebar-nav">
                     <ul class="nav nav-tabs">
-                        <li class="active">
+                        <li>
                             <a href="#" onclick="clickToHref('main.html')">首頁Page</a>
                         </li>
                         <li>
                             <a href="#" onclick="clickToHref('cartload.html')">購物車Page</a>
                         </li>
-						<li>
+						<li class="active">
                             <a href="#" onclick="clickToHref('checkout.html')">結帳Page</a>
                         </li>
                         <li>
@@ -81,7 +80,7 @@
                         <h2>輸入log參數值</h2>
 						<button class="btn btn-default btn-xs" type="button" onclick="javascript:get_cookies();">Get cookies</button>
 						<button class="btn btn-default btn-xs" type="button" onclick="javascript:remove_value();">remove</button>
-					</div>
+                </div>
                     <!--/span-->
                     <span class="col-md-3">
                         <div class="input-group">
@@ -96,9 +95,9 @@
                           <span class="input-group-addon">cc_guid:</span>
                           <input type="text" class="form-control" id="cc_guid" placeholder="">
                         </div>
-                        <div class="input-group">
+						<div class="input-group">
                           <span class="input-group-addon">page_type:</span>
-                          <input type="text" class="form-control" id="page_type" value="p">
+                          <input type="text" class="form-control" id="page_type" value="orp">
                         </div>
                         <div class="input-group">
                           <span class="input-group-addon">device:</span>
@@ -108,14 +107,25 @@
                           <span class="input-group-addon">web:</span>
                           <input type="text" class="form-control" id="web" value="web">
                         </div>
+						<div class="input-group">
+                          <span class="input-group-addon">order_id</span>
+                          <input type="text" class="form-control" id="order_id" placeholder="">
+                        </div>
 						<div class="input-group-btn" align="left">
 							<button class="btn btn-primary" type="button" onclick="javascript:send_log();set_cookies();">確定</button>
 						</div>
                     </span>
+					<span class="col-md-3">
+						<div>
+                          <span class="input-group-addon" align="center">訂單商品</span>
+						</div>
+						<div class="input-group" id="add_div">
+						  <button class="button" onclick="javascript:addInput_goods();"> + </button>
+                        </div>
+					</span>
 				</div>
             </div>
-			
-            </div>
+			</div>
         </div>
         <!--/row-->
         <hr>
@@ -126,25 +136,50 @@
 	
 	<!--venraas tracking script-->
 	<script language="javascript">
-	function send_log() {
-		//alert($("input#autosend").val());
-		var myVenraasLogs = function() {
-			try{
-				venraas.init({'domainName':'.venraas.tw','token':'rMUyBRrrpL'});
+	
+	function send_log(){
+	  var myVenraasLogs = function() {
+		try{
+			if($("input#uid").val()==""){
+				alert("請填入uid");
+				throw "請填入uid";
+			}
+			if($("input#order_id").val()==""){
+				alert("請填入order_id");
+				throw "請填入order_id";
+			}
+			
+			venraas.init({'domainName':'.venraas.tw','token':'rMUyBRrrpL'});
 
-				venraas.tracking('pageload|create',{
-					'autosend':false,
-					'uid':$("input#uid").val(),               //Require if user login
-					'cc_session':$("input#cc_session").val(),         //Optional
-					'cc_guid':$("input#cc_guid").val(),    //Optional
-					'page_type':$("input#page_type").val(),         //Optional
-					'device':$("input#device").val(),          //Optional
-					'web':$("input#web").val()           //Optional
+			venraas.tracking('checkout|create',{
+			'autosend':false,
+			'uid':$("input#uid").val(),            //Require
+			'cc_session':$("input#cc_session").val(),       //Optional
+			'cc_guid':$("input#cc_guid").val(), //Optional
+			'page_type':'orp',          
+			'device':$("input#device").val(),       //Optional
+			'web':$("input#web").val()        //Optional
+			});
+
+			venraas.ecTransaction('checkout|add',{
+				'id':$("input#order_id").val()               //Require if cart id exist Or let it be blank like this( 'id':'')
+			});
+			
+			//用foreach迴圈將每一個商品下的屬性取出來
+			j=1;
+			$("span[name='good']").each(function(){
+				venraas.ecTransaction('checkout|add_item',{
+				'id':$(".good_"+j+" .goods_id").val(),         //Require
+				'from_rec':$(".good_"+j+" .from_rec").val(),  // Optional, Ref PS.If you don't record values 
+				'rec_name':$(".good_"+j+" .rec_name").val()   // Optional
 				});
-
-				venraas.tracking('pageload|send');
-			}catch(e){ console.log("Debug in myVenraasLogs() Exception:" +e+", Do Nothing~");}
-		};
+				j+=1;			
+			});			
+			
+			venraas.tracking('checkout|send');
+		}catch(e){console.log("Debug in myVenraasLogs() Exception:" +e+", Do Nothing~");}
+	  };
+	  
 	  try{
 		var venraas_dt= Math.floor((new Date()).getTime()/86400000);
 		var venraas_script = document.createElement('script');
@@ -169,42 +204,79 @@
 
 	  }
 	  catch(e){console.log("Debug in Exception:" +e+", Do Nothing~");}
-	};
 
+	}
+	
+	
+	var i=0;
+	function addInput_goods(){
+		i+=1;
+		$("#add_div").append("<br>");
+		$("#add_div").append("<div>第"+i+"個商品:</div>");
+		$("#add_div").append('<span class="good_'+i+'" name="good">\
+								<div class="input-group">\
+								  <span class="input-group-addon">goods_id:</span>\
+								  <input type="text" class="goods_id" placeholder="goods_id">\
+								</div>\
+								<div class="input-group">\
+								  <span class="input-group-addon">from_rec:</span>\
+								  <input type="text" class="from_rec" placeholder="from_rec1, from_rec2, from_rec3 .....">\
+								</div>\
+								<div class="input-group">\
+								  <span class="input-group-addon">rec_name:</span>\
+								  <input type="text" class="rec_name" placeholder="rec_name">\
+								</div></span>');		
+	}
+	
 	function set_cookies(){
-		//1.
 		var customObject={};
 		customObject.uid=$("input#uid").val();
 		customObject.cc_session=$("input#cc_session").val();
 		customObject.cc_guid=$("input#cc_guid").val();
-		customObject.page_type=$("input#page_type").val();
+		customObject.device=$("input#page_type").val();
 		customObject.device=$("input#device").val();
 		customObject.web=$("input#web").val();
+		customObject.cart_id=$("input#order_id").val();
+		customObject.goods=new Array();
 		
+		var j=1
+		$("span[name='good']").each(function(){
+				customObject.goods.push(
+					{goods_id:$(".good_"+j+" .goods_id").val(), from_rec:$(".good_"+j+" .from_rec").val(), rec_name:$(".good_"+j+" .rec_name").val()}
+				)				
+				j+=1;
+			});
 		var jsonString = JSON.stringify(customObject);
-		document.cookie="main_cookie="+jsonString+";path=/;";
-			
-		//alert(document.cookie);	
+		document.cookie="checkout_cookie="+jsonString+";path=/";
 	};
 	
 	function getCookieByName(name) {
 		var value = "; " + document.cookie;
 		var parts = value.split("; " + name + "=");
 		if (parts.length == 2) return parts.pop().split(";").shift();
-	}
-
+	}	
+	
 	function get_cookies(){
 		if(document.cookie.length != 0){
-			//alert(getCookieByName("main_cookie"));	
-			var cookie_json = JSON.parse(getCookieByName("main_cookie"));
+			//alert(document.cookie);
+			var cookie_json = JSON.parse(getCookieByName("checkout_cookie")); // JSON.parse()將json字串轉成json物件
 			$("input#uid").val(cookie_json["uid"]);
 			$("input#cc_session").val(cookie_json["cc_session"]);
 			$("input#cc_guid").val(cookie_json["cc_guid"]);
 			$("input#page_type").val(cookie_json["page_type"]);
 			$("input#device").val(cookie_json["device"]);
 			$("input#web").val(cookie_json["web"]);
+			$("input#order_id").val(cookie_json["order_id"]);
+			
+			
+			for(j=1;j<=cookie_json["goods"].length;j++){
+				$(".good_"+j+" .goods_id").val(cookie_json["goods"][j-1]["goods_id"]);
+				$(".good_"+j+" .from_rec").val(cookie_json["goods"][j-1]["from_rec"]);
+				$(".good_"+j+" .rec_name").val(cookie_json["goods"][j-1]["rec_name"]);
+			};
+			
 		}
-	};
+	}
 	
 	function remove_value(){
 		$("input#uid").val("");
@@ -213,8 +285,17 @@
 		$("input#page_type").val("");
 		$("input#device").val("");
 		$("input#web").val("");
+		$("input#order_id").val("");
+		
+		j=1;
+		$("span[name='good']").each(function(){
+			$(".good_"+j+" .goods_id").val("");
+			$(".good_"+j+" .from_rec").val("");
+			$(".good_"+j+" .rec_name").val("");
+			j+=1;
+		});
 	};
-	
+		
 	</script>	
 	
 </body>
