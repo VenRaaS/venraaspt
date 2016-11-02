@@ -193,7 +193,7 @@ var venraastool = {
 				console.log(e.message);
 			}
 		};		
-		venraasxhr.open('POST', venstrob.strDhermesHost + venstrob.strDHermesApi, true);
+		venraasxhr.open('POST', 'https://' + venstrob.strDhermesHost + venstrob.strDHermesApi, true);
 		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
 		venraasxhr.withCredentials = true;
 
