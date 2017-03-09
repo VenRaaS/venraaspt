@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.3',
+	v: '1.3.1',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -19,6 +19,7 @@ var venstrob = {
 	strtypeTracking: '1',
 	strtypeEctrans:'2',
 	strtypeGuid:'3',
+	strtypeSession:'4',
 	venfloctl_processing:'',
 	strDhermesHost:'apih.venraas.tw',
 	strDHermesApi:'/hermes/api/goods/rank'	                
@@ -167,6 +168,7 @@ var venraastool = {
 	recomd: function(paramJson, cbf) {
 		var ven_guid = venraastool.getcookie("venguid");
 		if ("" == ven_guid) {
+//			console.log('debug in venguid is not exist');
 			if(typeof venfloctl !== 'undefined'){
 				var venfloctl_size= venraastool.object_size(venfloctl);
 				venfloctl[venfloctl_size]={};
@@ -179,8 +181,25 @@ var venraastool = {
 				venraas.ven_cps(venfloctl_size);
 			}
 		}
-
+		
+		var ven_session = venraastool.getcookie("vensession");
+		if("" == ven_session) {
+//			console.log('debug in vesession is not exist');			
+			if(typeof venfloctl !== 'undefined'){
+				var venfloctl_size= venraastool.object_size(venfloctl);
+				venfloctl[venfloctl_size]={};
+				venfloctl[venfloctl_size]["status"]=false;
+				venfloctl[venfloctl_size]["contr"]="";
+				venfloctl[venfloctl_size]["venact"]="";
+				venfloctl[venfloctl_size]["objv"]="";
+				venfloctl[venfloctl_size]["type"]=venstrob.strtypeSession;
+				venfloctl[venfloctl_size]["retry"]=0;
+				venraas.ven_cps(venfloctl_size);
+			}
+		}		
+		
 		paramJson.ven_guid = ven_guid;
+		paramJson.ven_session = ven_session;
 		
 		var venraasxhr = venraastool.xhr();
 		venraasxhr.onreadystatechange = function() {
@@ -520,6 +539,9 @@ var venraas = {
 						break;
 					case venstrob.strtypeGuid:
 						venraastool.getvenuuid("g",f_idx);
+						break;
+					case venstrob.strtypeSession:
+						venraastool.getvenuuid("s",f_idx);
 						break;
 					default:
 						break;
