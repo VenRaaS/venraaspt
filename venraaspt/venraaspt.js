@@ -24,7 +24,7 @@ var venstrob = {
 	strDhermesHost:'apih.venraas.tw',
 	strDHermesApi:'/hermes/api/goods/rank',
 	strCupidHost:'apir.venraas.tw',
-	strCupidKeywordApi:'cupid/api/goods/keywords'
+	strCupidKeywordApi:'/cupid/api/goods/keywords'
 };
 var venfloctl = new Object();
 var venraastool = {
