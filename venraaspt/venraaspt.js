@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.3.1',
+	v: '1.4.0',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -22,7 +22,9 @@ var venstrob = {
 	strtypeSession:'4',
 	venfloctl_processing:'',
 	strDhermesHost:'apih.venraas.tw',
-	strDHermesApi:'/hermes/api/goods/rank'	                
+	strDHermesApi:'/hermes/api/goods/rank',
+	strCupidHost:'apir.venraas.tw',
+	strCupidKeywordApi:'cupid/api/goods/keywords'
 };
 var venfloctl = new Object();
 var venraastool = {
@@ -212,14 +214,33 @@ var venraastool = {
 				console.log(e.message);
 			}
 		};		
-		venraasxhr.open('POST', 'https://' + venstrob.strDhermesHost + venstrob.strDHermesApi, true);
+		venraasxhr.open('POST', 'https://' + venstrob.strDhermesHost + venstrob.strCupidKeywordApi, true);
 		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
 		venraasxhr.withCredentials = true;
 
 		var jsonStr = JSON.stringify(paramJson);		
 		venraasxhr.send(jsonStr);
 		
-	}
+	},
+	goods_keywords: function(paramJson, cbf) {
+		var venraasxhr = venraastool.xhr();
+		venraasxhr.onreadystatechange = function() {
+			try {
+				if (this.readyState==4 && this.status==200) {					
+					cbf(this.responseText);
+				}
+			}
+			catch(e) {
+				console.log(e.message);
+			}
+		};		
+		venraasxhr.open('POST', 'https://' + venstrob.strCupidHost + venstrob.strDHermesApi, true);
+		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
+		venraasxhr.withCredentials = true;
+
+		var jsonStr = JSON.stringify(paramJson);		
+		venraasxhr.send(jsonStr);
+	}	
 };
 
 /*venraas controller object*/
