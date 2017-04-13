@@ -214,7 +214,7 @@ var venraastool = {
 				console.log(e.message);
 			}
 		};		
-		venraasxhr.open('POST', 'https://' + venstrob.strDhermesHost + venstrob.strCupidKeywordApi, true);
+		venraasxhr.open('POST', 'https://' + venstrob.strDhermesHost + venstrob.strDHermesApi, true);
 		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
 		venraasxhr.withCredentials = true;
 
@@ -234,7 +234,7 @@ var venraastool = {
 				console.log(e.message);
 			}
 		};		
-		venraasxhr.open('POST', 'https://' + venstrob.strCupidHost + venstrob.strDHermesApi, true);
+		venraasxhr.open('POST', 'https://' + venstrob.strCupidHost + venstrob.strCupidKeywordApi, true);
 		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
 		venraasxhr.withCredentials = true;
 
