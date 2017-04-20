@@ -214,8 +214,15 @@ var venraastool = {
 			catch(e) {
 				console.log(e.message);
 			}
-		};		
-		venraasxhr.open('POST', 'https://' + venstrob.strDhermesHost + venstrob.strDHermesApi, true);
+		};
+		
+		if paramJson.hasOwnProperty('goods_keywords') {			
+			paramJson.rec_logic = {"logic_list":[{"logic_name":"ClickStream","alg_list":[{"alg_name":"I2I_Model","model_type":"cooc_i2i","weight":1},{"alg_name":"I2I_Model","model_type":"content_i2i","weight":1}],"num_of_ref_cs":1,"random_cs_order":false,"filter_out_last_7_day_bought_items":true,"cs_must_in_current_categ_code":true,"use_all_alg_rec_gids":true,"weight_of_alg_rec_gids_size":1.5,"insert_cs_item_to_rec_items_first":false,"sort_by_socre":true,"add_key_terms_score":true},{"logic_name":"WhiteCategory","filter_out_last_7_day_bought_items":true,"weight_of_alg_rec_gids_size":1.5},{"logic_name":"ClickStream","alg_list":[{"alg_name":"I2I_Model","model_type":"cooc_i2i","weight":1}],"num_of_ref_cs":5,"random_cs_order":true,"filter_out_last_7_day_bought_items":true,"cs_must_in_current_categ_code":false,"use_all_alg_rec_gids":false,"weight_of_alg_rec_gids_size":1.5,"insert_cs_item_to_rec_items_first":true,"sort_by_socre":false},{"logic_name":"CurrentItem","alg_list":[{"alg_name":"GlobalTP"}],"filter_out_last_7_day_bought_items":true,"weight_of_alg_rec_gids_size":1.5,"sort_by_socre":false}]};			
+			venraasxhr.open('POST', 'https://' + venstrob.strCupidHost + venstrob.strCupidApi, true);
+		}
+		else {
+			venraasxhr.open('POST', 'https://' + venstrob.strDhermesHost + venstrob.strDHermesApi, true);
+		}
 		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
 		venraasxhr.withCredentials = true;
 
