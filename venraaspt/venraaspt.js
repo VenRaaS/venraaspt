@@ -169,37 +169,8 @@ var venraastool = {
 		}catch(e){}
 	},
 	recomd: function(paramJson, cbf) {
-		var ven_guid = venraastool.getcookie("venguid");
-		if ("" == ven_guid) {
-//			console.log('debug in venguid is not exist');
-			if(typeof venfloctl !== 'undefined'){
-				var venfloctl_size= venraastool.object_size(venfloctl);
-				venfloctl[venfloctl_size]={};
-				venfloctl[venfloctl_size]["status"]=false;
-				venfloctl[venfloctl_size]["contr"]="";
-				venfloctl[venfloctl_size]["venact"]="";
-				venfloctl[venfloctl_size]["objv"]="";
-				venfloctl[venfloctl_size]["type"]=venstrob.strtypeGuid;
-				venfloctl[venfloctl_size]["retry"]=0;
-				venraas.ven_cps(venfloctl_size);
-			}
-		}
-		
-		var ven_session = venraastool.getcookie("vensession");
-		if("" == ven_session) {
-//			console.log('debug in vesession is not exist');			
-			if(typeof venfloctl !== 'undefined'){
-				var venfloctl_size= venraastool.object_size(venfloctl);
-				venfloctl[venfloctl_size]={};
-				venfloctl[venfloctl_size]["status"]=false;
-				venfloctl[venfloctl_size]["contr"]="";
-				venfloctl[venfloctl_size]["venact"]="";
-				venfloctl[venfloctl_size]["objv"]="";
-				venfloctl[venfloctl_size]["type"]=venstrob.strtypeSession;
-				venfloctl[venfloctl_size]["retry"]=0;
-				venraas.ven_cps(venfloctl_size);
-			}
-		}		
+		var ven_guid = 'db0e0f1f-8d42-459c-ab80-0933a069710d.api-group-test20170425';		
+		var ven_session = 'd2a45c31-5805-4954-be71-d60ca2df1db3.api-group-test20170425.se';
 		
 		paramJson.ven_guid = ven_guid;
 		paramJson.ven_session = ven_session;
