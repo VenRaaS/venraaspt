@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.4.1',
+	v: '1.4.2',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -305,11 +305,22 @@ var vencontrob = {
 		/*this.setpdata(venact,'c_ga',venraastool.getcookie('_ga'));
 		this.setpdata(venact,'c_utma',venraastool.getcookie('__utma'));*/
 		this.setpdata(venact,'ver',venstrob.v);
+		var from_rec = this.getpdata(venact, 'from_rec');
+                if (! from_rec || "null" == from_rec) {
+                        var url = new URL(location.href);
+                        from_rec = url.searchParams.get('from_rec');
+                        if (from_rec) {
+                                this.setpdata(venact, 'from_rec', from_rec);
+                        }
+                }
 	},
 	pdata: new Object(),
 	creadata: function(_i){
 		//console.log('debug in creadata()');
 		this.pdata[_i]={};
+	},
+	getpdata: function(_i, _k){
+		return (this.pdata[_i]) ? this.pdata[_i][_k] : undefined;
 	},
 	setpdata: function(_i,_k,_v){
 		//console.log('debug in setpdata(): '+_i+' '+_k+' '+_v);
