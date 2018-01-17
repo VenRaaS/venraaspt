@@ -311,7 +311,7 @@ var vencontrob = {
 		//console.log('debug in creadata()');
 		this.pdata[_i]={};
 	},
-	getdata: function(_i, _k){
+	getpdata: function(_i, _k){
 		return (this.pdata[_i]) ? this.pdata[_i][_k] : undefined;
 	},
 	setpdata: function(_i,_k,_v){
