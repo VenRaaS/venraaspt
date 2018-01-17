@@ -305,9 +305,10 @@ var vencontrob = {
 		/*this.setpdata(venact,'c_ga',venraastool.getcookie('_ga'));
 		this.setpdata(venact,'c_utma',venraastool.getcookie('__utma'));*/
 		this.setpdata(venact,'ver',venstrob.v);
-                if (! this.getpdata(venact, 'from_rec')) {
+		var from_rec = this.getpdata(venact, 'from_rec');
+                if (! from_rec || "null" == from_rec) {
                         var url = new URL(location.href);
-                        var from_rec = url.searchParams.get('from_rec');
+                        from_rec = url.searchParams.get('from_rec');
                         if (from_rec) {
                                 this.setpdata(venact, 'from_rec', from_rec);
                         }
