@@ -207,7 +207,7 @@ var venraastool = {
 		venraasxhr.onreadystatechange = function() {
 			try {
 				if (this.readyState==4 && this.status==200) {					
-					cbf(this.responseText);
+					cbf(this.responseText, paramJson);
 				}
 			}
 			catch(e) {
