@@ -43,12 +43,12 @@ var venraastool = {
 	doCookieSetup: function (name, value, expirestime) {
 		try{
 			if(expirestime == 0){
-				document.cookie = name + "=" + escape(value) +";Path=/" + ((venstrob.strdn !== 'x') ? ";domain="+venstrob.strdn:'');
+				document.cookie = name + "=" + escape(value) + ";Path=/";
 			}else{
 				var expires = new Date();    
 				// 7 days,  7*24*60*60*1000 = 604800000
 				expires.setTime(expires.getTime() + expirestime);
-				document.cookie = name + "=" + escape(value) + ";expires=" + expires.toGMTString()+";Path=/";
+				document.cookie = name + "=" + escape(value) + ";expires=" + expires.toGMTString() + ";Path=/";
 				//console.log('debug in doCookieSetup(): done');
 			}
 		} catch(e){}
