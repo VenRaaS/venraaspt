@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.4.2',
+	v: '1.4.3',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
