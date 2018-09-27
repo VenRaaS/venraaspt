@@ -43,7 +43,7 @@ var venraastool = {
 	doCookieSetup: function (name, value, expirestime) {
 		try{
 			if(expirestime == 0){
-				document.cookie = name + "=" + escape(value) + ";Path=/";
+				document.cookie = name + "=" + escape(value) + ";Path=/" + ";domain=" + window.location.host.split('.').slice(1).join('.');
 			}else{
 				var expires = new Date();    
 				// 7 days,  7*24*60*60*1000 = 604800000
