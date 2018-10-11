@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.4.4',
+	v: '1.4.5',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -48,8 +48,12 @@ var venraastool = {
 				var expires = new Date();    
 				// 7 days,  7*24*60*60*1000 = 604800000
 				expires.setTime(expires.getTime() + expirestime);
+				//-- set cookie to base domain, e.g. 3-level domain or second-level domain
 				document.cookie = name + "=" + escape(value) + ";expires=" + expires.toGMTString() + ";Path=/" + ";domain=" + window.location.host.split('.').slice(1).join('.');
 				//console.log('debug in doCookieSetup(): done');
+				
+				//-- clear venguid which is under the current full domain
+				document.cookie = "venguid=" + venraastool.getcookie("venguid") + "; expires=" + new Date(0).toGMTString() + "; Path=/";				
 			}
 		} catch(e){}
 	},
@@ -484,7 +488,7 @@ var venraas = {
 				}
 			}
 			
-			//set ven_guid if not exists
+			//-- set ven_guid if not exists
 			if(venraastool.getcookie("venguid") == ""){
 				if(typeof venfloctl !== 'undefined'){
 					var venfloctl_size= venraastool.object_size(venfloctl);
