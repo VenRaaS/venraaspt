@@ -51,10 +51,6 @@ var venraastool = {
 				expires.setTime(expires.getTime() + expirestime);
 				//-- set cookie to base domain, i.e. 3-level domain
 				document.cookie = name + "=" + escape(value) + ";expires=" + expires.toGMTString() + ";Path=/" + ";domain=" + window.location.host.split('.').slice(-3).join('.');
-				//console.log('debug in doCookieSetup(): done');
-
-				//-- clear all cookies which are under the current full domain
-				document.cookie = name + "=; expires=" + new Date(0).toGMTString() + "; Path=/";
 			}
 		} catch(e){}
 	},
