@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.4.6',
+	v: '1.5.0',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -20,6 +20,7 @@ var venstrob = {
 	strtypeEctrans:'2',
 	strtypeGuid:'3',
 	strtypeSession:'4',
+	strtypeRecomd:'5',
 	venfloctl_processing:'',
 	strDhermesHost:'apih.venraas.tw',
 	strDHermesApi:'/hermes/api/goods/rank',
@@ -45,15 +46,15 @@ var venraastool = {
 			if(expirestime == 0){
 				document.cookie = name + "=" + escape(value) + ";Path=/" + ";domain=" + window.location.host.split('.').slice(-3).join('.');
 			}else{
-				var expires = new Date();    
+				var expires = new Date();
 				// 7 days,  7*24*60*60*1000 = 604800000
 				expires.setTime(expires.getTime() + expirestime);
 				//-- set cookie to base domain, i.e. 3-level domain
 				document.cookie = name + "=" + escape(value) + ";expires=" + expires.toGMTString() + ";Path=/" + ";domain=" + window.location.host.split('.').slice(-3).join('.');
 				//console.log('debug in doCookieSetup(): done');
-				
+
 				//-- clear all cookies which are under the current full domain
-				document.cookie = name + "=; expires=" + new Date(0).toGMTString() + "; Path=/";				
+				document.cookie = name + "=; expires=" + new Date(0).toGMTString() + "; Path=/";
 			}
 		} catch(e){}
 	},
@@ -66,7 +67,7 @@ var venraastool = {
 			//console.log(venstrob.strwarn+':input exception. c2');
 			return false;
 		}
-	},	
+	},
 	object_size: function(obj){
 		var element_count = 0;
 		for (var e in obj) {
@@ -80,7 +81,7 @@ var venraastool = {
 		var str = [];
 		if(typeof obj != 'object')
 			return "";
-		
+
 		if(_idx == venstrob.strnull){
 			for (var _k in obj) {
 			str.push( encodeURIComponent(_k)+"="+ encodeURIComponent(
@@ -113,7 +114,7 @@ var venraastool = {
 		var venraasxhr;
 		try{
 			var _param="?id="+top.location.host+"&typ="+type+'&pt=a';
-			
+
 			if(window.XDomainRequest && (navigator.userAgent.indexOf("MSIE 8.0")>0 || navigator.userAgent.indexOf("MSIE 9.0")>0) ){
 				/*venraasxhr=new XDomainRequest();
 				if(venraasxhr){
@@ -124,7 +125,7 @@ var venraastool = {
 					venraasxhr.ontimeout=function(){console.log("getvenuuid fail"); };
 					venraasxhr.onprogress=function() {};
 					venraasxhr.onload= function(){
-						console.log('debug in xdr onload:'+venraasxhr.responseText); 
+						console.log('debug in xdr onload:'+venraasxhr.responseText);
 						vencontrob.vencookiecontr(type,venraasxhr.responseText);
 						if(type=="s"){
 							vencontrob.actioncontroller(f_idx);
@@ -171,12 +172,34 @@ var venraastool = {
 			document.body.appendChild(vjsonp);
 		}catch(e){}
 	},
-	recomd: function(paramJson, cbf) {
-		var ven_guid = venraastool.getcookie("venguid");
-		if ("" == ven_guid) {
+	getrecomd: function(f_idx){
+		var paramJson = venfloctl[f_idx]["objv"]["param"];
+		var cbf = venfloctl[f_idx]["objv"]["callback"];
+
+		var venraasxhr = venraastool.xhr();
+		venraasxhr.onreadystatechange = function() {
+			try {
+				if (this.readyState==4 && this.status==200) {
+					cbf(this.responseText, paramJson);
+					venfloctl[f_idx]["status"] = true
+				}
+			}
+			catch(e) {
+				console.log(e.message);
+			}
+		};
+		venraasxhr.open('POST', 'https://' + venstrob.strDhermesHost + venstrob.strDHermesApi, true);
+		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
+		venraasxhr.withCredentials = true;
+
+		var jsonStr = JSON.stringify(paramJson);
+		venraasxhr.send(jsonStr);
+	},
+	recomd: function(paramJson, cbf){
+		if ("" == venraastool.getcookie("venguid")) {
 //			console.log('debug in venguid is not exist');
 			if(typeof venfloctl !== 'undefined'){
-				var venfloctl_size= venraastool.object_size(venfloctl);
+				var venfloctl_size = venraastool.object_size(venfloctl);
 				venfloctl[venfloctl_size]={};
 				venfloctl[venfloctl_size]["status"]=false;
 				venfloctl[venfloctl_size]["contr"]="";
@@ -187,12 +210,11 @@ var venraastool = {
 				venraas.ven_cps(venfloctl_size);
 			}
 		}
-		
-		var ven_session = venraastool.getcookie("vensession");
-		if("" == ven_session) {
-//			console.log('debug in vesession is not exist');			
+
+		if("" == venraastool.getcookie("vensession")) {
+//			console.log('debug in vesession is not exist');
 			if(typeof venfloctl !== 'undefined'){
-				var venfloctl_size= venraastool.object_size(venfloctl);
+				var venfloctl_size = venraastool.object_size(venfloctl);
 				venfloctl[venfloctl_size]={};
 				venfloctl[venfloctl_size]["status"]=false;
 				venfloctl[venfloctl_size]["contr"]="";
@@ -202,49 +224,61 @@ var venraastool = {
 				venfloctl[venfloctl_size]["retry"]=0;
 				venraas.ven_cps(venfloctl_size);
 			}
-		}		
-		
-		paramJson.ven_guid = ven_guid;
-		paramJson.ven_session = ven_session;
-		
+		}
+
+		paramJson.ven_guid = venraastool.getcookie("venguid");
+		paramJson.ven_session = venraastool.getcookie("vensession");
+
+		if(typeof venfloctl !== 'undefined'){
+			var venfloctl_size = venraastool.object_size(venfloctl);
+			venfloctl[venfloctl_size]={};
+			venfloctl[venfloctl_size]["status"]=false;
+			venfloctl[venfloctl_size]["contr"]="";
+			venfloctl[venfloctl_size]["venact"]="";
+			venfloctl[venfloctl_size]["objv"]={param:paramJson, callback:cbf};
+			venfloctl[venfloctl_size]["type"]=venstrob.strtypeRecomd;
+			venfloctl[venfloctl_size]["retry"]=0;
+			venraas.ven_cps(venfloctl_size);
+		}
+/*///
 		var venraasxhr = venraastool.xhr();
 		venraasxhr.onreadystatechange = function() {
 			try {
-				if (this.readyState==4 && this.status==200) {					
+				if (this.readyState==4 && this.status==200) {
 					cbf(this.responseText, paramJson);
 				}
 			}
 			catch(e) {
 				console.log(e.message);
 			}
-		};		
+		};
 		venraasxhr.open('POST', 'https://' + venstrob.strDhermesHost + venstrob.strDHermesApi, true);
 		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
 		venraasxhr.withCredentials = true;
 
-		var jsonStr = JSON.stringify(paramJson);		
+		var jsonStr = JSON.stringify(paramJson);
 		venraasxhr.send(jsonStr);
-		
+*/
 	},
 	goods_keywords: function(paramJson, cbf) {
 		var venraasxhr = venraastool.xhr();
 		venraasxhr.onreadystatechange = function() {
 			try {
-				if (this.readyState==4 && this.status==200) {					
+				if (this.readyState==4 && this.status==200) {
 					cbf(this.responseText);
 				}
 			}
 			catch(e) {
 				console.log(e.message);
 			}
-		};		
+		};
 		venraasxhr.open('POST', 'https://' + venstrob.strCupidHost + venstrob.strCupidKeywordApi, true);
 		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
 		venraasxhr.withCredentials = true;
 
-		var jsonStr = JSON.stringify(paramJson);		
+		var jsonStr = JSON.stringify(paramJson);
 		venraasxhr.send(jsonStr);
-	}	
+	}
 };
 
 /*venraas controller object*/
@@ -287,7 +321,7 @@ var vencontrob = {
 		if(venact == venstrob.strall){
 			this.apirequest(venstrob.strnull);
 		}
-		else{	
+		else{
 			this.apirequest(venact);
 		}
 	},
@@ -303,7 +337,7 @@ var vencontrob = {
 			this.setpdata(venact,'client_tzo',(new Date()).getTimezoneOffset());
 			this.setpdata(venact,'client_utc',(new Date()).getTime());
 		} catch(e){}
-		
+
 		this.setpdata(venact,'ven_guid',venraastool.getcookie('venguid'));
 		this.setpdata(venact,'ven_session',venraastool.getcookie('vensession'));
 		/*this.setpdata(venact,'c_ga',venraastool.getcookie('_ga'));
@@ -402,22 +436,22 @@ var vencontrob = {
 				var autosend=true;
 				if(objv['autosend'] == false)
 					autosend=false;
-				//delete objv.autosend; 
+				//delete objv.autosend;
 				vencontrob.createcontr(venact,objv);
 				vencontrob.autoretrieve(venact);
 				if(autosend == true)
 					vencontrob.sendcontr(venact);
 				break;
-				
+
 			case venstrob.stradd:
 				vencontrob.addcontr(venact,objv);
 				break;
-				
+
 			case venstrob.strsnd:
 				//console.log('debug in send controller');
 				vencontrob.sendcontr(venact);
 				break;
-			
+
 			case venstrob.strrec:
 				vencontrob.addrecitemcontr(venact,objv);
 				break;
@@ -460,7 +494,7 @@ var venraas = {
 				venstrob.strdn=isetting.domainName;
 			if(typeof isetting !=='undefined' && typeof isetting.token !=='undefined')
 				venstrob.strtoken=isetting.token;
-			
+
 			var ck_iframe = document.getElementById('venraasfr');
 			if(ck_iframe === null){
 				var venguid = document.createElement('iframe');
@@ -472,7 +506,7 @@ var venraas = {
 				venguid.style.padding ="0px";
 				venguid.style.margin ="0px";
 				venguid.src = 'https://'+venstrob.strserver+venstrob.struuidapi;
-				
+
 				if(typeof isetting =='undefined' || typeof isetting.tagID == 'undefined'){
 					document.body.appendChild(venguid);
 					//console.log('here is init with body');
@@ -487,7 +521,7 @@ var venraas = {
 					}
 				}
 			}
-			
+
 			//-- set ven_guid if not exists
 			if(venraastool.getcookie("venguid") == ""){
 				if(typeof venfloctl !== 'undefined'){
@@ -510,9 +544,9 @@ var venraas = {
 		try{
 			//console.log("debug in "+comd);
 			//injection detection
-			
+
 			//type detection
-			if(typeof objv =='undefined') 
+			if(typeof objv =='undefined')
 				objv={};
 			if(venraastool.dect_type(comd,objv) == false)
 				return ;
@@ -528,7 +562,7 @@ var venraas = {
 				venact=venstrob.strall;
 				contr=comd;
 			}
-			
+
 			if(typeof venfloctl !== 'undefined'){
 				var venfloctl_size= venraastool.object_size(venfloctl);
 				venfloctl[venfloctl_size]={};
@@ -543,14 +577,14 @@ var venraas = {
 			}
 		}
 		catch(e){}
-		
-		
+
+
 	},
 	ven_tracking: function(f_idx){
 		//set ven_session if not exists
 		if(venraastool.getcookie("vensession") == ""){
 			//console.log('debug in vesession is not exist');
-			//if session not exist, ask a session value first, then send log later. 
+			//if session not exist, ask a session value first, then send log later.
 			venraastool.getvenuuid("s", f_idx);
 		} else {
 			//reset expirestime
@@ -559,7 +593,7 @@ var venraas = {
 			//send log
 			//console.log('debug in action controller');
 			vencontrob.actioncontroller(f_idx);
-			
+
 		}
 	},
 	ven_cps: function(f_idx){
@@ -579,10 +613,13 @@ var venraas = {
 					case venstrob.strtypeSession:
 						venraastool.getvenuuid("s",f_idx);
 						break;
+					case venstrob.strtypeRecomd:
+						venraastool.getrecomd(f_idx)
+						break;
 					default:
 						break;
 				}
-				
+
 			} else{
 				//console.log('debug in ven_cps: '+f_idx+' '+ venfloctl[f_idx-1]["status"] );
 				if(venfloctl[f_idx]["retry"] < 3){
@@ -590,7 +627,7 @@ var venraas = {
 					//console.log('debug in ven_cps: setTimeout -'+f_idx +' count- '+venfloctl[f_idx]["retry"]);
 					setTimeout("venraas.ven_cps("+f_idx+")",100);
 				}
-				
+
 			}
 		}
 		catch(e){}
@@ -599,11 +636,11 @@ var venraas = {
 		try{
 			//injection detection
 			//type detection
-			if(typeof objv =='undefined') 
+			if(typeof objv =='undefined')
 				objv={};
 			if(venraastool.dect_type(comd,objv) == false)
 				return ;
-				
+
 			//action routing
 			var venact='';
 			var contr='';
@@ -612,7 +649,7 @@ var venraas = {
 				venact=cmdar[0];
 				contr=cmdar[1];
 			}
-			
+
 			if(typeof venfloctl !== 'undefined'){
 				var venfloctl_size= venraastool.object_size(venfloctl);
 				venfloctl[venfloctl_size]={};
@@ -639,11 +676,11 @@ var venraas = {
 				trans_objv['trans_i']=objv;
 				vencontrob.addcontr(venact,trans_objv);
 				break;
-				
+
 			case venstrob.stradi:
 				vencontrob.addtritemcontr(venact,objv);
 				break;
-				
+
 			default:
 				console.log(venstrob.strwarn+':input exception. c3');
 				break;
