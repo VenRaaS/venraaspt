@@ -188,6 +188,9 @@ var venraastool = {
 		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
 		venraasxhr.withCredentials = true;
 
+		paramJson.ven_guid = venraastool.getcookie("venguid");
+		paramJson.ven_session = venraastool.getcookie("vensession");
+
 		var jsonStr = JSON.stringify(paramJson);
 		venraasxhr.send(jsonStr);
 	},
@@ -221,10 +224,7 @@ var venraastool = {
 				venraas.ven_cps(venfloctl_size);
 			}
 		}
-
-		paramJson.ven_guid = venraastool.getcookie("venguid");
-		paramJson.ven_session = venraastool.getcookie("vensession");
-
+		
 		if(typeof venfloctl !== 'undefined'){
 			var venfloctl_size = venraastool.object_size(venfloctl);
 			venfloctl[venfloctl_size]={};
