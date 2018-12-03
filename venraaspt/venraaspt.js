@@ -170,6 +170,8 @@ var venraastool = {
 	},
 	getrecomd: function(f_idx){
 		var paramJson = venfloctl[f_idx]["objv"]["param"];
+		paramJson.ven_guid = venraastool.getcookie("venguid");
+		paramJson.ven_session = venraastool.getcookie("vensession");
 		var cbf = venfloctl[f_idx]["objv"]["callback"];
 
 		var venraasxhr = venraastool.xhr();
@@ -186,10 +188,7 @@ var venraastool = {
 		};
 		venraasxhr.open('POST', 'https://' + venstrob.strDhermesHost + venstrob.strDHermesApi, true);
 		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
-		venraasxhr.withCredentials = true;
-
-		paramJson.ven_guid = venraastool.getcookie("venguid");
-		paramJson.ven_session = venraastool.getcookie("vensession");
+		venraasxhr.withCredentials = true;		
 
 		var jsonStr = JSON.stringify(paramJson);
 		venraasxhr.send(jsonStr);
