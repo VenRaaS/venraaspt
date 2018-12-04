@@ -42,15 +42,18 @@ var venraastool = {
 		}
 	},
 	doCookieSetup: function (name, value, expirestime) {
+		var levelth = 3;
+		
 		try{
 			if(expirestime == 0){
-				document.cookie = name + "=" + escape(value) + ";Path=/" + ";domain=" + window.location.host.split('.').slice(-3).join('.');
+				document.cookie = name + "=" + escape(value) + ";Path=/" + ";domain=" + window.location.host.split('.').slice(-levelth).join('.');
 			}else{
 				var expires = new Date();
 				// 7 days,  7*24*60*60*1000 = 604800000
 				expires.setTime(expires.getTime() + expirestime);
+				
 				//-- set cookie to base domain, i.e. 3-level domain
-				document.cookie = name + "=" + escape(value) + ";expires=" + expires.toGMTString() + ";Path=/" + ";domain=" + window.location.host.split('.').slice(-3).join('.');
+				document.cookie = name + "=" + escape(value) + ";expires=" + expires.toGMTString() + ";Path=/" + ";domain=" + window.location.host.split('.').slice(-levelth).join('.');
 			}
 		} catch(e){}
 	},
@@ -93,19 +96,19 @@ var venraastool = {
 		return str.join("&");
 	},
 	xhr: (
-				(
-					window.XMLHttpRequest &&
-					(window.location.protocol !== "file:" || !window.ActiveXObject)
-				) ?
-				function() {
-					return new window.XMLHttpRequest();
-				} :
-				function() {
-					try {
-						return new window.ActiveXObject("Microsoft.XMLHTTP");
-					} catch(e) {}
-				}
-			),
+		(
+			window.XMLHttpRequest &&
+			(window.location.protocol !== "file:" || !window.ActiveXObject)
+		) ?
+		function() {
+			return new window.XMLHttpRequest();
+		} :
+		function() {
+			try {
+				return new window.ActiveXObject("Microsoft.XMLHTTP");
+			} catch(e) {}
+		}
+	),
 	getvenuuid: function(type, f_idx){
 		var venraasxhr;
 		try{
