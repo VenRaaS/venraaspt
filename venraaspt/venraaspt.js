@@ -238,25 +238,6 @@ var venraastool = {
 			venfloctl[venfloctl_size]["retry"]=0;
 			venraas.ven_cps(venfloctl_size);
 		}
-/*///
-		var venraasxhr = venraastool.xhr();
-		venraasxhr.onreadystatechange = function() {
-			try {
-				if (this.readyState==4 && this.status==200) {
-					cbf(this.responseText, paramJson);
-				}
-			}
-			catch(e) {
-				console.log(e.message);
-			}
-		};
-		venraasxhr.open('POST', 'https://' + venstrob.strDhermesHost + venstrob.strDHermesApi, true);
-		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
-		venraasxhr.withCredentials = true;
-
-		var jsonStr = JSON.stringify(paramJson);
-		venraasxhr.send(jsonStr);
-*/
 	},
 	goods_keywords: function(paramJson, cbf) {
 		var venraasxhr = venraastool.xhr();
