@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.5.0',
+	v: '1.6.0',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -171,32 +171,91 @@ var venraastool = {
 			document.body.appendChild(vjsonp);
 		}catch(e){}
 	},
-	getrecomd: function(f_idx){
-		var paramJson = venfloctl[f_idx]["objv"]["param"];
-		paramJson.ven_guid = venraastool.getcookie("venguid");
-		paramJson.ven_session = venraastool.getcookie("vensession");
-		var cbf = venfloctl[f_idx]["objv"]["callback"];
+	hashCode: function(str) {
+		var hash = 0;
 
-		var venraasxhr = venraastool.xhr();
+		if (str.length === 0)
+			return hash;
+
+		for (var i = 0; i < str.length; i++) {
+			var chr = str.charCodeAt(i);
+			hash  = ((hash << 5) - hash) + chr;
+			hash |= 0; // Convert to 32bit integer
+		}
+		
+		return hash;
+	},
+	getrecomd: function(f_idx){
+		var paramObj = venfloctl[f_idx]["objv"]["param"];
+		paramObj.ven_guid = venraastool.getcookie("venguid");
+		paramObj.ven_session = venraastool.getcookie("vensession");		
+		var cbf = venfloctl[f_idx]["objv"]["callback"];
+		
+		//-- key of the recom'd response in localStorage
+		var cacheKey = {
+			'device':paramObj.device,
+			'rec_pos': paramObj.rec_pos,
+			'rec_type': paramObj.rec_type,
+			'token': paramObj.token,
+			'ven_guid':paramObj.ven_guid
+		};
+		var cacheKeyJson = JSON.stringify(cacheKey);		
+
+		var venraasxhr = venraastool.xhr();		
 		venraasxhr.onreadystatechange = function() {
 			try {
 				if (this.readyState==4 && this.status==200) {
-					cbf(this.responseText, paramJson);
-					venfloctl[f_idx]["status"] = true
+					cbf(this.responseText, paramObj);
+					
+					//-- set recom'd response into localStorage
+					localStorage.setItem(cacheKeyJson, this.responseText);
+					
+					var keyInfo = {'key':cacheKeyJson, 'expires_unixtime': (new Date()).getTime() + 7*24*60*60*1000};
+					var mgrKey = 'venraas-token' + paramObj.token + ' cache keys';
+					var mgrKeys = localStorage.getItem(mgrKey);
+					//-- update key info, e.g. expiration time
+					if (mgrKeys) {
+						var keyInfos = JSON.parse(mgrKeys)
+						var isExists = false;
+						keyInfos.forEach(function(elem, i, array) {
+							if (elem.key === cacheKeyJson) {
+								array[i] = keyInfo;
+								isExists = true;
+								alert(JSON.stringify(keyInfos))
+							}});
+							
+						if (! isExists) {
+							keyInfos.push(keyInfo);							
+						}
+					}
+					else {
+						var keyInfos = [keyInfo];						
+					}
+					localStorage.setItem(mgrKey, JSON.stringify(keyInfos));
+					
+					venfloctl[f_idx]["status"] = true;
 				}
 			}
 			catch(e) {
 				console.log(e.message);
 			}
 		};
+		
+		venraasxhr.timeout = 2000;
+		venraasxhr.ontimeout = function(e) {
+			var lastRespText = localStorage.getItem(cacheKeyJson);
+			console.log('timeout! response last result');
+			cbf(lastRespText, paramObj);
+		}
+		
 		venraasxhr.open('POST', 'https://' + venstrob.strDhermesHost + venstrob.strDHermesApi, true);
 		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
 		venraasxhr.withCredentials = true;		
 
-		var jsonStr = JSON.stringify(paramJson);
+		var jsonStr = JSON.stringify(paramObj);
 		venraasxhr.send(jsonStr);
 	},
-	recomd: function(paramJson, cbf){
+	recomd: function(paramObj, cbf){
 		if ("" == venraastool.getcookie("venguid")) {
 //			console.log('debug in venguid is not exist');
 			if(typeof venfloctl !== 'undefined'){
@@ -233,13 +292,13 @@ var venraastool = {
 			venfloctl[venfloctl_size]["status"]=false;
 			venfloctl[venfloctl_size]["contr"]="";
 			venfloctl[venfloctl_size]["venact"]="";
-			venfloctl[venfloctl_size]["objv"]={param:paramJson, callback:cbf};
+			venfloctl[venfloctl_size]["objv"]={param:paramObj, callback:cbf};
 			venfloctl[venfloctl_size]["type"]=venstrob.strtypeRecomd;
 			venfloctl[venfloctl_size]["retry"]=0;
 			venraas.ven_cps(venfloctl_size);
 		}
 	},
-	goods_keywords: function(paramJson, cbf) {
+	goods_keywords: function(paramObj, cbf) {
 		var venraasxhr = venraastool.xhr();
 		venraasxhr.onreadystatechange = function() {
 			try {
@@ -255,7 +314,7 @@ var venraastool = {
 		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
 		venraasxhr.withCredentials = true;
 
-		var jsonStr = JSON.stringify(paramJson);
+		var jsonStr = JSON.stringify(paramObj);
 		venraasxhr.send(jsonStr);
 	}
 };
