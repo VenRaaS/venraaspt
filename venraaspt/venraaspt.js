@@ -1,7 +1,7 @@
 /*venraas string definition*/
 var venstrob = {
 	v: '1.6.0',
-	strserver: 'apid.venraas.tw',
+	strserver: 'apid.pcloud.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
 	stract: 'action',
@@ -22,9 +22,9 @@ var venstrob = {
 	strtypeSession:'4',
 	strtypeRecomd:'5',
 	venfloctl_processing:'',
-	strDhermesHost:'apih.venraas.tw',
+	strDhermesHost:'apih.pcloud.tw',
 	strDHermesApi:'/hermes/api/goods/rank',
-	strCupidHost:'apir.venraas.tw',
+	strCupidHost:'apir.pcloud.tw',
 	strCupidKeywordApi:'/cupid/api/goods/keywords'
 };
 var venfloctl = new Object();
@@ -210,26 +210,37 @@ var venraastool = {
 					//-- set recom'd response into localStorage
 					localStorage.setItem(cacheKeyJson, this.responseText);
 					
-					var keyInfo = {'key':cacheKeyJson, 'expires_unixtime': (new Date()).getTime() + 7*24*60*60*1000};
-					var mgrKey = 'venraas-token' + paramObj.token + ' cache keys';
-					var mgrKeys = localStorage.getItem(mgrKey);
 					//-- update key info, e.g. expiration time
-					if (mgrKeys) {
-						var keyInfos = JSON.parse(mgrKeys)
+					var current_timestamp = new Date().getTime();
+					var keyInfo = {'key':cacheKeyJson, 'expires_timestamp': current_timestamp + 7*24*60*60*1000};
+					var mgrKey = 'venraas-token' + paramObj.token + ' cache keys';					
+					
+					//-- update or push a new one into keyInfos
+					var keyInfos = [keyInfo];
+					var cacheKeys = localStorage.getItem(mgrKey);
+					if (cacheKeys) {
+						var keyInfos = JSON.parse(cacheKeys)
 						var isExists = false;
-						keyInfos.forEach(function(elem, i, array) {
-							if (elem.key === cacheKeyJson) {
+						keyInfos.forEach(function(e, i, array) {
+							if (e.key === cacheKeyJson) {
 								array[i] = keyInfo;
-								isExists = true;
-								alert(JSON.stringify(keyInfos))
+								isExists = true;								
 							}});
 							
 						if (! isExists) {
-							keyInfos.push(keyInfo);							
+							keyInfos.push(keyInfo);
 						}
-					}
-					else {
-						var keyInfos = [keyInfo];						
+
+						// remove expires cache
+						keyInfos.forEach(function(e, i, array) {
+							if (e.expires_timestamp <= current_timestamp) {
+								localStorage.removeItem(e.key);								
+							}});
+						
+						var nonExpires = keyInfos.filter(function(e) {
+							return current_timestamp < e.expires_timestamp;
+						});
+						keyInfos = nonExpires;
 					}
 					localStorage.setItem(mgrKey, JSON.stringify(keyInfos));
 					
