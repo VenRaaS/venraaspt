@@ -207,42 +207,45 @@ var venraastool = {
 				if (this.readyState==4 && this.status==200) {
 					cbf(this.responseText, paramObj);
 					
-					//-- set recom'd response into localStorage
-					localStorage.setItem(cacheKeyJson, this.responseText);
-					
-					//-- update key info, e.g. expiration time
-					var current_timestamp = new Date().getTime();
-					var keyInfo = {'key':cacheKeyJson, 'expires_timestamp': current_timestamp + 7*24*60*60*1000};
-					var mgrKey = 'venraas-token' + paramObj.token + ' cache keys';					
-					
-					//-- update or push a new one into keyInfos
-					var keyInfos = [keyInfo];
-					var cacheKeys = localStorage.getItem(mgrKey);
-					if (cacheKeys) {
-						var keyInfos = JSON.parse(cacheKeys)
-						var isExists = false;
-						keyInfos.forEach(function(e, i, array) {
-							if (e.key === cacheKeyJson) {
-								array[i] = keyInfo;
-								isExists = true;								
-							}});
-							
-						if (! isExists) {
-							keyInfos.push(keyInfo);
-						}
-
-						// remove expires cache
-						keyInfos.forEach(function(e, i, array) {
-							if (e.expires_timestamp <= current_timestamp) {
-								localStorage.removeItem(e.key);								
-							}});
+					var recObj = JSON.parse(this.responseText);					
+					if (recObj.recomd_list && 0 < recObj.recomd_list.length) {				
+						//-- set recom'd response into localStorage
+						localStorage.setItem(cacheKeyJson, this.responseText);
 						
-						var nonExpires = keyInfos.filter(function(e) {
-							return current_timestamp < e.expires_timestamp;
-						});
-						keyInfos = nonExpires;
+						//-- update key info, e.g. expiration time
+						var current_timestamp = new Date().getTime();
+						var keyInfo = {'key':cacheKeyJson, 'expires_timestamp': current_timestamp + 7*24*60*60*1000};
+						var mgrKey = 'venraas-token' + paramObj.token + ' cache keys';					
+						
+						//-- update or push a new one into keyInfos
+						var keyInfos = [keyInfo];
+						var cacheKeys = localStorage.getItem(mgrKey);
+						if (cacheKeys) {
+							var keyInfos = JSON.parse(cacheKeys)
+							var isExists = false;
+							keyInfos.forEach(function(e, i, array) {
+								if (e.key === cacheKeyJson) {
+									array[i] = keyInfo;
+									isExists = true;								
+								}});
+								
+							if (! isExists) {
+								keyInfos.push(keyInfo);
+							}
+
+							// remove expires cache
+							keyInfos.forEach(function(e, i, array) {
+								if (e.expires_timestamp <= current_timestamp) {
+									localStorage.removeItem(e.key);								
+								}});
+							
+							var nonExpires = keyInfos.filter(function(e) {
+								return current_timestamp < e.expires_timestamp;
+							});
+							keyInfos = nonExpires;
+						}
+						localStorage.setItem(mgrKey, JSON.stringify(keyInfos));
 					}
-					localStorage.setItem(mgrKey, JSON.stringify(keyInfos));
 					
 					venfloctl[f_idx]["status"] = true;
 				}
