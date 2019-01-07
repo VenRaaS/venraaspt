@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.6.0',
+	v: '1.6.1',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -185,6 +185,45 @@ var venraastool = {
 		
 		return hash;
 	},
+	//-- update key info and wipe legacy keys, e.g. expiration time
+	updateCachekeys: function(comToken, cacheKeyJson) {		
+		// e.g. 'venraas-token$TOKEN cache keys'
+		var mgrKey = 'venraas-token' + comToken + ' cache keys';
+		
+		var current_timestamp = new Date().getTime();
+		var keyInfo = {'key':cacheKeyJson, 'expires_timestamp': current_timestamp + 7*24*60*60*1000};
+		
+		//-- update or push a new one into keyInfos
+		// get keyInfos with JSON form
+		var keyInfosJson = localStorage.getItem(mgrKey);
+		var keyInfos = [keyInfo];
+		if (keyInfosJson) {
+			var keyInfos = JSON.parse(keyInfosJson)
+			var isExists = false;
+			keyInfos.forEach(function(e, i, array) {
+				if (e.key === cacheKeyJson) {
+					array[i] = keyInfo;
+					isExists = true;								
+				}});
+				
+			if (! isExists) {
+				keyInfos.push(keyInfo);
+			}
+
+			// remove expires cache
+			keyInfos.forEach(function(e, i, array) {
+				if (e.expires_timestamp <= current_timestamp) {
+					localStorage.removeItem(e.key);								
+				}});
+			
+			var nonExpires = keyInfos.filter(function(e) {
+				return current_timestamp < e.expires_timestamp;
+			});
+			keyInfos = nonExpires;
+		}
+		localStorage.setItem(mgrKey, JSON.stringify(keyInfos));		
+	}
+	,
 	getrecomd: function(f_idx){
 		var paramObj = venfloctl[f_idx]["objv"]["param"];
 		paramObj.ven_guid = venraastool.getcookie("venguid");
@@ -196,8 +235,7 @@ var venraastool = {
 			'device':paramObj.device,
 			'rec_pos': paramObj.rec_pos,
 			'rec_type': paramObj.rec_type,
-			'token': paramObj.token,
-			'ven_guid':paramObj.ven_guid
+			'token': paramObj.token			
 		};
 		var cacheKeyJson = JSON.stringify(cacheKey);		
 
@@ -208,43 +246,11 @@ var venraastool = {
 					cbf(this.responseText, paramObj);
 					
 					var recObj = JSON.parse(this.responseText);					
-					if (recObj.recomd_list && 0 < recObj.recomd_list.length) {				
+					if (recObj.recomd_list && 0 < recObj.recomd_list.length) {
 						//-- set recom'd response into localStorage
 						localStorage.setItem(cacheKeyJson, this.responseText);
-						
-						//-- update key info, e.g. expiration time
-						var current_timestamp = new Date().getTime();
-						var keyInfo = {'key':cacheKeyJson, 'expires_timestamp': current_timestamp + 7*24*60*60*1000};
-						var mgrKey = 'venraas-token' + paramObj.token + ' cache keys';					
-						
-						//-- update or push a new one into keyInfos
-						var keyInfos = [keyInfo];
-						var cacheKeys = localStorage.getItem(mgrKey);
-						if (cacheKeys) {
-							var keyInfos = JSON.parse(cacheKeys)
-							var isExists = false;
-							keyInfos.forEach(function(e, i, array) {
-								if (e.key === cacheKeyJson) {
-									array[i] = keyInfo;
-									isExists = true;								
-								}});
-								
-							if (! isExists) {
-								keyInfos.push(keyInfo);
-							}
-
-							// remove expires cache
-							keyInfos.forEach(function(e, i, array) {
-								if (e.expires_timestamp <= current_timestamp) {
-									localStorage.removeItem(e.key);								
-								}});
-							
-							var nonExpires = keyInfos.filter(function(e) {
-								return current_timestamp < e.expires_timestamp;
-							});
-							keyInfos = nonExpires;
-						}
-						localStorage.setItem(mgrKey, JSON.stringify(keyInfos));
+												
+						venraastool.updateCachekeys(paramObj.token, cacheKeyJson);
 					}
 					
 					venfloctl[f_idx]["status"] = true;
