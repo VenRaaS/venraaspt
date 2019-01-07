@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.6.1',
+	v: '1.6.2',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -114,26 +114,7 @@ var venraastool = {
 		try{
 			var _param="?id="+top.location.host+"&typ="+type+'&pt=a';
 
-			if(window.XDomainRequest && (navigator.userAgent.indexOf("MSIE 8.0")>0 || navigator.userAgent.indexOf("MSIE 9.0")>0) ){
-				/*venraasxhr=new XDomainRequest();
-				if(venraasxhr){
-					console.log('debug in getvenuuid xdr send');
-					venraasxhr.open("GET",('https:' == document.location.protocol ? 'https://' : 'http://')+venstrob.strserver+venstrob.struuidapi+_param);
-					venraasxhr.timeout=1000;
-					venraasxhr.onerror=function(){console.log("getvenuuid fail"); };
-					venraasxhr.ontimeout=function(){console.log("getvenuuid fail"); };
-					venraasxhr.onprogress=function() {};
-					venraasxhr.onload= function(){
-						console.log('debug in xdr onload:'+venraasxhr.responseText);
-						vencontrob.vencookiecontr(type,venraasxhr.responseText);
-						if(type=="s"){
-							vencontrob.actioncontroller(f_idx);
-						}else {
-							venfloctl[]["status"]=true;
-							}
-					};
-					venraasxhr.send();
-				}*/
+			if(window.XDomainRequest && (navigator.userAgent.indexOf("MSIE 8.0")>0 || navigator.userAgent.indexOf("MSIE 9.0")>0) ){				
 				venstrob.venfloctl_processing = f_idx;
 				venraastool.ven_jsonp('https://'+venstrob.strserver+ venstrob.struuidapi +_param+'&cbk=y');
 			} else if(navigator.userAgent.indexOf("MSIE 7.0")>0 || navigator.userAgent.indexOf("MSIE 6.0")>0){
@@ -451,17 +432,6 @@ var vencontrob = {
 		if(p_str !== ""){
 			try {
 				if(window.XDomainRequest && (navigator.userAgent.indexOf("MSIE 8.0")>0 || navigator.userAgent.indexOf("MSIE 9.0")>0) ){
-					/*venraasxhr=new XDomainRequest();
-					if(venraasxhr){
-						//console.log('debug in apirequest xdr send');
-						venraasxhr.open("POST",('https:' == document.location.protocol ? 'https://' : 'http://')+venstrob.strserver+venstrob.strlogapi);
-						venraasxhr.timeout=1000;
-						venraasxhr.onerror=function(){console.log("venraas log fail"); };
-						venraasxhr.ontimeout=function(){console.log("venraas log fail"); };
-						venraasxhr.onprogress=function() {};
-						venraasxhr.onload= function(){vencontrob.delpdata(_idx);};
-						venraasxhr.send(p_str);
-					}*/
 					venraastool.ven_jsonp('https://'+venstrob.strserver+venstrob.strlogapi+'?'+p_str);
 				} else if(navigator.userAgent.indexOf("MSIE 7.0")>0 || navigator.userAgent.indexOf("MSIE 6.0")>0){
 					//console.log("IE7 IE6");
