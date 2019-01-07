@@ -1,7 +1,7 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.6.1',
-	strserver: 'apid.venraas.tw',
+	v: '1.6.0',
+	strserver: 'apid.pcloud.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
 	stract: 'action',
@@ -22,9 +22,9 @@ var venstrob = {
 	strtypeSession:'4',
 	strtypeRecomd:'5',
 	venfloctl_processing:'',
-	strDhermesHost:'apih.venraas.tw',
+	strDhermesHost:'apih.pcloud.tw',
 	strDHermesApi:'/hermes/api/goods/rank',
-	strCupidHost:'apir.venraas.tw',
+	strCupidHost:'apir.pcloud.tw',
 	strCupidKeywordApi:'/cupid/api/goods/keywords'
 };
 var venfloctl = new Object();
@@ -264,13 +264,20 @@ var venraastool = {
 		venraasxhr.timeout = 2000;
 		venraasxhr.ontimeout = function(e) {
 			var lastRespText = localStorage.getItem(cacheKeyJson);
-			console.log('timeout! response last result');
+			if (lastRespText) {
+				console.log('venraas recomd timeout! response the last result');
+			}
+			else {
+				lastRespText = {};
+				console.log('venraas recomd timeout! none of the last result');
+			}
+			
 			cbf(lastRespText, paramObj);
 		}
 		
 		venraasxhr.open('POST', 'https://' + venstrob.strDhermesHost + venstrob.strDHermesApi, true);
 		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
-		venraasxhr.withCredentials = true;		
+		venraasxhr.withCredentials = true;
 
 		var jsonStr = JSON.stringify(paramObj);
 		venraasxhr.send(jsonStr);
