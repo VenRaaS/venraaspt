@@ -333,7 +333,7 @@ var venraastool = {
 			var params = dompath_paramstr[1].split('&');
 			for (var i = 0; i < params.length; ++i){
 				var kv = params[i].split('=', 2);
-				if (2 == kv) {
+				if (2 == kv.length) {
 					if (paramName == kv[0]) {
 						return decodeURIComponent(kv[1].replace(/\+/g, " "));
 					}
