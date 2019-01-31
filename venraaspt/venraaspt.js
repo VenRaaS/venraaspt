@@ -324,6 +324,25 @@ var venraastool = {
 
 		var jsonStr = JSON.stringify(paramObj);
 		venraasxhr.send(jsonStr);
+	},
+	get_paramValFromURL: function(paramName, url) {
+		var rs = null;
+		
+		var dompath_paramstr = url.split.('?',2);
+		if (dompath_paramstr.length < 2)
+			return rs;
+		
+		var params = dompath_paramstr[1].split('&');
+		for (var i = 0; i < params.length; ++i){
+			var kv = params[i].split('=', 2);
+			if (2 == kv) {
+				if (paramName == kv[0]) {
+					return decodeURIComponent(kv[1].replace(/\+/g, " "));
+				}
+			}
+		}
+		
+		return rs;
 	}
 };
 
