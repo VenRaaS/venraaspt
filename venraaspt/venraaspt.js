@@ -409,8 +409,7 @@ var vencontrob = {
 		this.setpdata(venact,'ver',venstrob.v);
 		var from_rec = this.getpdata(venact, 'from_rec');
                 if (! from_rec || "null" == from_rec) {
-                        var url = new URL(location.href);
-                        from_rec = url.searchParams.get('from_rec');
+			from_rec = venraastool.get_paramValFromURL('from_rec', location.href);
                         if (from_rec) {
                                 this.setpdata(venact, 'from_rec', from_rec);
                         }
