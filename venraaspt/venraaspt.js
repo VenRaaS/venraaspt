@@ -242,7 +242,6 @@ var venraastool = {
 			}
 		};
 		
-		venraasxhr.timeout = 2000;
 		venraasxhr.ontimeout = function(e) {
 			var lastRespText = localStorage.getItem(cacheKeyJson);
 			if (lastRespText) {
@@ -259,6 +258,7 @@ var venraastool = {
 		venraasxhr.open('POST', 'https://' + venstrob.strDhermesHost + venstrob.strDHermesApi, true);
 		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
 		venraasxhr.withCredentials = true;
+		venraasxhr.timeout = 2000;
 
 		var jsonStr = JSON.stringify(paramObj);
 		venraasxhr.send(jsonStr);
