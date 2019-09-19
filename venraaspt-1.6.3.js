@@ -242,7 +242,7 @@ var venraastool = {
 				console.log(e.message);
 			}
 		};
-		
+
 		venraasxhr.timeout = 2000;
 		venraasxhr.ontimeout = function(e) {
 			var lastRespText = localStorage.getItem(cacheKeyJson);
@@ -263,6 +263,44 @@ var venraastool = {
 
 		var jsonStr = JSON.stringify(paramObj);
 		venraasxhr.send(jsonStr);
+	},
+	saveLocalStorage: function(paramJson, responseText) {
+		try {
+			//-- key of the recom'd response in localStorage
+			var cacheKey = {
+				'device':paramJson.device,
+				'rec_pos': paramJson.rec_pos,
+				'rec_type': paramJson.rec_type,
+				'token': paramJson.token
+			};
+			var cacheKeyJson = JSON.stringify(cacheKey);
+			var recObj = JSON.parse(responseText);
+			if (recObj.recomd_list && 0 < recObj.recomd_list.length) {
+				//-- set recom'd response into localStorage
+				localStorage.setItem(cacheKeyJson, responseText);
+
+				venraastool.updateCachekeys(paramJson.token, cacheKeyJson);
+			}
+		}
+		catch(e) {
+			console.log(e.message);
+		}
+	},
+	getLocalStorage: function(paramJson) {
+		try {
+			//-- key of the recom'd response in localStorage
+			var cacheKey = {
+				'device':paramJson.device,
+				'rec_pos': paramJson.rec_pos,
+				'rec_type': paramJson.rec_type,
+				'token': paramJson.token
+			};
+			var cacheKeyJson = JSON.stringify(cacheKey);
+			return localStorage.getItem(cacheKeyJson);
+		}
+		catch(e) {
+			console.log(e.message);
+		}
 	},
 	recomd: function(paramJson, cbf) {
 		var ven_guid = venraastool.getcookie("venguid");
@@ -307,6 +345,7 @@ var venraastool = {
 							xhr_recomd.onreadystatechange = function() {
 							try {
 								if (this.readyState == 4 && this.status == 200) {
+									venraastool.saveLocalStorage(paramJson, this.responseText);
 									cbf(this.responseText, paramJson);
 								}
 							}
@@ -314,6 +353,21 @@ var venraastool = {
 								console.log(e.message);
 							}
 							};
+
+							xhr_recomd.timeout = 2000;
+							xhr_recomd.ontimeout = function(e) {
+								var lastRespText = venraastool.getLocalStorage(paramJson);
+								if (lastRespText) {
+									console.log('venraas recomd timeout! response the last result');
+								}
+								else {
+									lastRespText = {};
+									console.log('venraas recomd timeout! none of the last result');
+								}
+
+								cbf(lastRespText, paramJson);
+							}
+
 							var jsonStr = JSON.stringify(paramJson);
 							xhr_recomd.send(jsonStr);
 						}
@@ -357,6 +411,7 @@ var venraastool = {
 					xhr_recomd.onreadystatechange = function() {
 					try {
 						if (this.readyState == 4 && this.status == 200) {
+							venraastool.saveLocalStorage(paramJson, this.responseText);
 							cbf(this.responseText, paramJson);
 						}
 					}
@@ -364,6 +419,21 @@ var venraastool = {
 						console.log(e.message);
 					}
 					};
+
+					xhr_recomd.timeout = 2000;
+					xhr_recomd.ontimeout = function(e) {
+						var lastRespText = venraastool.getLocalStorage(paramJson);
+						if (lastRespText) {
+							console.log('venraas recomd timeout! response the last result');
+						}
+						else {
+							lastRespText = {};
+							console.log('venraas recomd timeout! none of the last result');
+						}
+
+						cbf(lastRespText, paramJson);
+					}
+
 					var jsonStr = JSON.stringify(paramJson);
 					xhr_recomd.send(jsonStr);
 				}
@@ -388,6 +458,7 @@ var venraastool = {
 		xhr_recomd.onreadystatechange = function() {
 		try {
 			if (this.readyState == 4 && this.status == 200) {
+				venraastool.saveLocalStorage(paramJson, this.responseText);
 				cbf(this.responseText, paramJson);
 			}
 		}
@@ -395,6 +466,20 @@ var venraastool = {
 			console.log(e.message);
 		}
 		};
+
+		xhr_recomd.timeout = 2000;
+		xhr_recomd.ontimeout = function(e) {
+			if (lastRespText) {
+				console.log('venraas recomd timeout! response the last result');
+			}
+			else {
+				lastRespText = {};
+				console.log('venraas recomd timeout! none of the last result');
+			}
+
+			cbf(lastRespText, paramJson);
+		}
+
 		var jsonStr = JSON.stringify(paramJson);
 		xhr_recomd.send(jsonStr);
 	},
