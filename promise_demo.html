@@ -6,7 +6,7 @@
 <script>
 
     
-    function CreateVenRaaSTool() {
+    function CreateVenRaaSJS() {
         //-- Promise for IE11
         //   https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.5.5/bluebird.min.js
         /**
@@ -46,88 +46,153 @@
             strCupidHost:'apir.venraas.tw',            
             strCupidKeywordApi:'/cupid/api/goods/keywords'
         };
-
-        this._ajaxCall_promise = function (method, content_t, url) {
-            var promise = new Promise(
-                function(resolve, reject){
-                    var xhr = (window.XMLHttpRequest) ?
-                        new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-                        
-                    xhr.open(method, url, true);
-                    switch (content_t) {
-                        case 'form':
-                            xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded;charset=UTF-8");
-                            break;
-                        case 'json':
-                            xhr.setRequestHeader("Content-type","application/json;charset=UTF-8");
-                            break;
-                    }
-                    
-                    xhr.onreadystatechange = function(){
-                        if (xhr.readyState === 4){
-                            if (xhr.status === 200){
-                                var resp = xhr.responseText;                                
-                                resolve(resp);        
-                            } else {
-                                reject(xhr.status);
-                                console.log("xhr status:" + xhr.status);
-                            }
-                        }
-                    };
-                    xhr.send();
-                });
-
-            return promise;
-        };
         
-        this.getGuid_promise = function() {
-            var param ='?id=shopping.pchome.com.tw' + '&typ=g&pt=a';
+        
+        this.ventool = {
+            dect_type: function(comd, objv) {
+                if (typeof comd != 'string') {
+                    //console.log(venstrob.strwarn+':input exception. c1');
+                    return false;
+                }
+                if (typeof objv != 'object') {
+                    //console.log(venstrob.strwarn+':input exception. c2');
+                    return false;
+                }
+            },
+            
+            getCookie: function (name) {
+                theCookie = document.cookie+";";
+                name += "=";
+                start = theCookie.indexOf(name);
+                if (start != -1) {
+                    end = theCookie.indexOf(";",start);
+                    return (theCookie.substring(start + name.length, end));
+                } else {
+                    return "";
+                }
+            },           
+            
+            ven_tracking: function(){
+                //set ven_session if not exists
+                if( this.getcookie("vensession") == "") {
+                    //console.log('debug in vesession is not exist');
+                    //if session not exist, ask a session value first, then send log later.
+//TODO                    this.getVenUUID("s", f_idx);
+                } else {
+                    //reset expirestime
+                    //console.log('debug in re-set venraas session cookie');
+//TODO                    venraastool.doCookieSetup("vensession",venraastool.getcookie("vensession"),1800000);
+                    //send log
+                    //console.log('debug in action controller');
+//TODO                    vencontrob.actioncontroller(f_idx);
+
+                }
+            },
+            
+            getGuid_promise: function(cfg) {
+                var param ='?id=shopping.pchome.com.tw' + '&typ=g&pt=a';
 //            var param ='?id=' + top.location.host + '&typ=g&pt=a';
-            var url = 'https://' + this.cfg.strserver + this.cfg.struuidapi + param;            
-            return this._ajaxCall_promise('GET', 'form', url);
-        };
+                var url = 'https://' + cfg.strserver + cfg.struuidapi + param;            
+                return this.ajaxCall_promise('GET', 'form', url);
+            },
         
-        this.getSession_promise = function() {
-            var param ='?id=shopping.pchome.com.tw' + '&typ=s&pt=a';
+            getSession_promise: function(cfg) {
+                var param ='?id=shopping.pchome.com.tw' + '&typ=s&pt=a';
 //            var param ='?id=' + top.location.host + '&typ=s&pt=a';
-            var url = 'https://' + this.cfg.strserver + this.cfg.struuidapi + param;
-            return this._ajaxCall_promise('GET', 'form', url);
+                var url = 'https://' + cfg.strserver + cfg.struuidapi + param;
+                return this.ajaxCall_promise('GET', 'form', url);
+            },
+            
+            ajaxCall_promise: function (method, content_t, url) {
+                var promise = new Promise(
+                    function(resolve, reject){
+                        var xhr = (window.XMLHttpRequest) ?
+                            new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+                            
+                        xhr.open(method, url, true);
+                        switch (content_t) {
+                            case 'form':
+                                xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded;charset=UTF-8");
+                                break;
+                            case 'json':
+                                xhr.setRequestHeader("Content-type","application/json;charset=UTF-8");
+                                break;
+                        }
+                        
+                        xhr.onreadystatechange = function(){
+                            if (xhr.readyState === 4){
+                                if (xhr.status === 200){
+                                    var resp = xhr.responseText;                                
+                                    resolve(resp);        
+                                } else {
+                                    reject(xhr.status);
+                                    console.log("xhr status:" + xhr.status);
+                                }
+                            }
+                        };
+                        xhr.send();
+                    });
+
+                return promise;
+            },           
         };
         
-        this.tracking: function(comd, objv){
+        
+        this.tracking = function(comd, objv) {
             try {
                 //type detection
                 if (typeof objv =='undefined')
                     objv={};
-                if (venraastool.dect_type(comd,objv) == false)
+                if (this.ventool.dect_type(comd, objv) == false)
                     return ;
 
                 //action routing
                 var venact = '';
                 var contr = '';
                 if (comd.indexOf('|') > -1) {
-                    cmdar=comd.split('|');
-                    venact=cmdar[0];
-                    contr=cmdar[1];
+                    cmdar = comd.split('|');
+                    venact = cmdar[0];
+                    contr  = cmdar[1];
                 } else {
-                    venact=venstrob.strall;
-                    contr=comd;
+                    venact = this.cfg.strall;
+                    contr  = comd;
                 }
-
-//TODO...
+                
+                this.ven_cps(this.cfg.strtypeTracking);
             }
             catch(e){}
         };
-
+        
+        this.ven_cps = function(proc_t) {        
+            switch (proc_t) {
+                case this.cfg.strtypeTracking:
+                    this.ventool.ven_tracking();                    
+                    break;
+                case this.cfg.strtypeEctrans:
+//TODO                    venraas.ven_ecTransaction(f_idx);
+                    break;
+                case this.cfg.strtypeGuid:
+//TODO                    venraastool.getvenuuid("g",f_idx);
+                    break;
+                case this.cfg.strtypeSession:
+//TODO                    venraastool.getvenuuid("s",f_idx);
+                    break;
+                case this.cfg.strtypeRecomd:
+//TODO                    venraastool.getrecomd(f_idx)
+                    break;
+                default:
+                    break;
+            }
+        };
         
         
         this.test_GuidSess = function () {
             var thisObj = this;
             
-            thisObj.getGuid_promise()
+            thisObj.ventool.getGuid_promise(thisObj.cfg)
             .then(function (resp) {
                 console.log(resp);
-                return thisObj.getSession_promise();
+                return thisObj.ventool.getSession_promise(thisObj.cfg);
             })
             .then(function(resp){
                 console.log(resp);    
@@ -135,11 +200,11 @@
         };
     }
     
-    var venPC = new CreateVenRaaSTool();
-    venPC.test_GuidSess();
+    var venPC = new CreateVenRaaSJS();
+    venPC.test_GuidSess();    
+
     
-
-
+    
 </script>
 
 </head>
