@@ -1,7 +1,7 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.6.2',
-	strserver: 'apid.venraas.tw',
+	v: '1.6.3',
+	strserver: 'apid.friday.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
 	stract: 'action',
@@ -22,9 +22,9 @@ var venstrob = {
 	strtypeSession:'4',
 	strtypeRecomd:'5',
 	venfloctl_processing:'',
-	strDhermesHost:'apih.venraas.tw',
+	strDhermesHost:'apih.friday.tw',
 	strDHermesApi:'/hermes/api/goods/rank',
-	strCupidHost:'apir.venraas.tw',
+	strCupidHost:'apir.friday.tw',
 	strCupidKeywordApi:'/cupid/api/goods/keywords'
 };
 var venfloctl = new Object();
@@ -43,7 +43,7 @@ var venraastool = {
 	},
 	doCookieSetup: function (name, value, expirestime) {
 		var levelth = 3;
-		
+
 		try{
 			if(expirestime == 0){
 				document.cookie = name + "=" + escape(value) + ";Path=/" + ";domain=" + window.location.host.split('.').slice(-levelth).join('.');
@@ -51,7 +51,7 @@ var venraastool = {
 				var expires = new Date();
 				// 7 days,  7*24*60*60*1000 = 604800000
 				expires.setTime(expires.getTime() + expirestime);
-				
+
 				//-- set cookie to base domain, i.e. 3-level domain
 				document.cookie = name + "=" + escape(value) + ";expires=" + expires.toGMTString() + ";Path=/" + ";domain=" + window.location.host.split('.').slice(-levelth).join('.');
 			}
@@ -101,10 +101,12 @@ var venraastool = {
 			(window.location.protocol !== "file:" || !window.ActiveXObject)
 		) ?
 		function() {
+			console.log("debug in xhr=window.XMLHttpRequest()");
 			return new window.XMLHttpRequest();
 		} :
 		function() {
 			try {
+				console.log("debug in xhr=window.ActiveXObject(\"Microsoft.XMLHTTP\")");
 				return new window.ActiveXObject("Microsoft.XMLHTTP");
 			} catch(e) {}
 		}
@@ -114,7 +116,7 @@ var venraastool = {
 		try{
 			var _param="?id="+top.location.host+"&typ="+type+'&pt=a';
 
-			if(window.XDomainRequest && (navigator.userAgent.indexOf("MSIE 8.0")>0 || navigator.userAgent.indexOf("MSIE 9.0")>0) ){				
+			if(window.XDomainRequest && (navigator.userAgent.indexOf("MSIE 8.0")>0 || navigator.userAgent.indexOf("MSIE 9.0")>0) ){
 				venstrob.venfloctl_processing = f_idx;
 				venraastool.ven_jsonp('https://'+venstrob.strserver+ venstrob.struuidapi +_param+'&cbk=y');
 			} else if(navigator.userAgent.indexOf("MSIE 7.0")>0 || navigator.userAgent.indexOf("MSIE 6.0")>0){
@@ -163,17 +165,17 @@ var venraastool = {
 			hash  = ((hash << 5) - hash) + chr;
 			hash |= 0; // Convert to 32bit integer
 		}
-		
+
 		return hash;
 	},
 	//-- update key info and wipe legacy keys, e.g. expiration time
-	updateCachekeys: function(comToken, cacheKeyJson) {		
+	updateCachekeys: function(comToken, cacheKeyJson) {
 		// e.g. 'venraas-token$TOKEN cache keys'
 		var mgrKey = 'venraas-token' + comToken + ' cache keys';
-		
+
 		var current_timestamp = new Date().getTime();
 		var keyInfo = {'key':cacheKeyJson, 'expires_timestamp': current_timestamp + 7*24*60*60*1000};
-		
+
 		//-- update or push a new one into keyInfos
 		// get keyInfos with JSON form
 		var keyInfosJson = localStorage.getItem(mgrKey);
@@ -184,9 +186,9 @@ var venraastool = {
 			keyInfos.forEach(function(e, i, array) {
 				if (e.key === cacheKeyJson) {
 					array[i] = keyInfo;
-					isExists = true;								
+					isExists = true;
 				}});
-				
+
 			if (! isExists) {
 				keyInfos.push(keyInfo);
 			}
@@ -194,46 +196,45 @@ var venraastool = {
 			// remove expires cache
 			keyInfos.forEach(function(e, i, array) {
 				if (e.expires_timestamp <= current_timestamp) {
-					localStorage.removeItem(e.key);								
+					localStorage.removeItem(e.key);
 				}});
-			
+
 			var nonExpires = keyInfos.filter(function(e) {
 				return current_timestamp < e.expires_timestamp;
 			});
 			keyInfos = nonExpires;
 		}
-		localStorage.setItem(mgrKey, JSON.stringify(keyInfos));		
-	}
-	,
+		localStorage.setItem(mgrKey, JSON.stringify(keyInfos));
+	},
 	getrecomd: function(f_idx){
 		var paramObj = venfloctl[f_idx]["objv"]["param"];
 		paramObj.ven_guid = venraastool.getcookie("venguid");
-		paramObj.ven_session = venraastool.getcookie("vensession");		
+		paramObj.ven_session = venraastool.getcookie("vensession");
 		var cbf = venfloctl[f_idx]["objv"]["callback"];
-		
+
 		//-- key of the recom'd response in localStorage
 		var cacheKey = {
 			'device':paramObj.device,
 			'rec_pos': paramObj.rec_pos,
 			'rec_type': paramObj.rec_type,
-			'token': paramObj.token			
+			'token': paramObj.token
 		};
-		var cacheKeyJson = JSON.stringify(cacheKey);		
+		var cacheKeyJson = JSON.stringify(cacheKey);
 
 		var venraasxhr = venraastool.xhr();		
 		venraasxhr.onreadystatechange = function() {
 			try {
 				if (this.readyState==4 && this.status==200) {
 					cbf(this.responseText, paramObj);
-					
-					var recObj = JSON.parse(this.responseText);					
+
+					var recObj = JSON.parse(this.responseText);
 					if (recObj.recomd_list && 0 < recObj.recomd_list.length) {
 						//-- set recom'd response into localStorage
 						localStorage.setItem(cacheKeyJson, this.responseText);
-												
+
 						venraastool.updateCachekeys(paramObj.token, cacheKeyJson);
 					}
-					
+
 					venfloctl[f_idx]["status"] = true;
 				}
 			}
@@ -241,7 +242,8 @@ var venraastool = {
 				console.log(e.message);
 			}
 		};
-		
+
+		venraasxhr.timeout = 2000;
 		venraasxhr.ontimeout = function(e) {
 			var lastRespText = localStorage.getItem(cacheKeyJson);
 			if (lastRespText) {
@@ -254,57 +256,232 @@ var venraastool = {
 			
 			cbf(lastRespText, paramObj);
 		}
-		
+
 		venraasxhr.open('POST', 'https://' + venstrob.strDhermesHost + venstrob.strDHermesApi, true);
 		venraasxhr.setRequestHeader("Content-type","application/json; charset=UTF-8");
 		venraasxhr.withCredentials = true;
-		venraasxhr.timeout = 2000;
 
 		var jsonStr = JSON.stringify(paramObj);
 		venraasxhr.send(jsonStr);
 	},
-	recomd: function(paramObj, cbf){
-		if ("" == venraastool.getcookie("venguid")) {
-//			console.log('debug in venguid is not exist');
-			if(typeof venfloctl !== 'undefined'){
-				var venfloctl_size = venraastool.object_size(venfloctl);
-				venfloctl[venfloctl_size]={};
-				venfloctl[venfloctl_size]["status"]=false;
-				venfloctl[venfloctl_size]["contr"]="";
-				venfloctl[venfloctl_size]["venact"]="";
-				venfloctl[venfloctl_size]["objv"]="";
-				venfloctl[venfloctl_size]["type"]=venstrob.strtypeGuid;
-				venfloctl[venfloctl_size]["retry"]=0;
-				venraas.ven_cps(venfloctl_size);
+	saveLocalStorage: function(paramJson, responseText) {
+		try {
+			//-- key of the recom'd response in localStorage
+			var cacheKey = {
+				'device':paramJson.device,
+				'rec_pos': paramJson.rec_pos,
+				'rec_type': paramJson.rec_type,
+				'token': paramJson.token
+			};
+			var cacheKeyJson = JSON.stringify(cacheKey);
+			var recObj = JSON.parse(responseText);
+			if (recObj.recomd_list && 0 < recObj.recomd_list.length) {
+				//-- set recom'd response into localStorage
+				localStorage.setItem(cacheKeyJson, responseText);
+
+				venraastool.updateCachekeys(paramJson.token, cacheKeyJson);
 			}
+		}
+		catch(e) {
+			console.log(e.message);
+		}
+	},
+	getLocalStorage: function(paramJson) {
+		try {
+			//-- key of the recom'd response in localStorage
+			var cacheKey = {
+				'device':paramJson.device,
+				'rec_pos': paramJson.rec_pos,
+				'rec_type': paramJson.rec_type,
+				'token': paramJson.token
+			};
+			var cacheKeyJson = JSON.stringify(cacheKey);
+			return localStorage.getItem(cacheKeyJson);
+		}
+		catch(e) {
+			console.log(e.message);
+		}
+	},
+	recomd: function(paramJson, cbf) {
+		var ven_guid = venraastool.getcookie("venguid");
+		if ("" == ven_guid) {
+			console.log("debug in venguid is not exist");
+			//venguid not exist, vensession not exist!
+
+			//get guid
+			var url_guid = "https://" + venstrob.strserver + venstrob.struuidapi + "?id=" + top.location.host + "&typ=g&pt=a";
+			var xhr_guid = venraastool.xhr();
+			xhr_guid.open("GET", url_guid, true);
+			xhr_guid.setRequestHeader("Content-type","application/x-www-form-urlencoded;charset=UTF-8");
+
+			xhr_guid.withCredentials = true;
+			xhr_guid.onreadystatechange = function() {
+			try {
+				if (this.readyState == 4 && this.status == 200) {
+					venraastool.doCookieSetup("venguid", this.responseText, 315360000000);
+					ven_guid = this.responseText;
+
+					//get session
+					var url_session = "https://" + venstrob.strserver + venstrob.struuidapi + "?id=" + top.location.host + "&typ=s&pt=a";
+					var xhr_session = venraastool.xhr();
+					xhr_session.open("GET", url_session, true);
+					xhr_session.setRequestHeader("Content-type", "application/x-www-form-urlencoded;charset=UTF-8");
+					xhr_session.withCredentials = true;
+					xhr_session.onreadystatechange = function() {
+					try {
+						if (this.readyState == 4 && this.status == 200) {
+							venraastool.doCookieSetup("vensession", this.responseText, 1800000);
+							ven_session = this.responseText;
+
+							//get recomd
+							var url_recomd = "https://" + venstrob.strDhermesHost + venstrob.strDHermesApi;
+							paramJson.ven_guid = ven_guid;
+							paramJson.ven_session = ven_session;
+
+							var xhr_recomd = venraastool.xhr();
+							xhr_recomd.open("POST", url_recomd, true);
+							xhr_recomd.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+							xhr_recomd.withCredentials = true;
+							xhr_recomd.onreadystatechange = function() {
+							try {
+								if (this.readyState == 4 && this.status == 200) {
+									venraastool.saveLocalStorage(paramJson, this.responseText);
+									cbf(this.responseText, paramJson);
+								}
+							}
+							catch(e) {
+								console.log(e.message);
+							}
+							};
+
+							xhr_recomd.timeout = 2000;
+							xhr_recomd.ontimeout = function(e) {
+								var lastRespText = venraastool.getLocalStorage(paramJson);
+								if (lastRespText) {
+									console.log('venraas recomd timeout! response the last result');
+								}
+								else {
+									lastRespText = {};
+									console.log('venraas recomd timeout! none of the last result');
+								}
+
+								cbf(lastRespText, paramJson);
+							}
+
+							var jsonStr = JSON.stringify(paramJson);
+							xhr_recomd.send(jsonStr);
+						}
+					}
+					catch(e) {}
+					};
+					xhr_session.send();
+				}
+			}
+			catch(e) {}
+			};
+			xhr_guid.send();
+
+			return;
 		}
 
-		if("" == venraastool.getcookie("vensession")) {
-//			console.log('debug in vesession is not exist');
-			if(typeof venfloctl !== 'undefined'){
-				var venfloctl_size = venraastool.object_size(venfloctl);
-				venfloctl[venfloctl_size]={};
-				venfloctl[venfloctl_size]["status"]=false;
-				venfloctl[venfloctl_size]["contr"]="";
-				venfloctl[venfloctl_size]["venact"]="";
-				venfloctl[venfloctl_size]["objv"]="";
-				venfloctl[venfloctl_size]["type"]=venstrob.strtypeSession;
-				venfloctl[venfloctl_size]["retry"]=0;
-				venraas.ven_cps(venfloctl_size);
+		var ven_session = venraastool.getcookie("vensession");
+		if ("" == ven_session) {
+			console.log("debug in vensession is not exist");
+			//vensession not exist
+			var url_session = "https://" + venstrob.strserver + venstrob.struuidapi + "?id=" + top.location.host + "&typ=s&pt=a";
+			var xhr_session = venraastool.xhr();
+			xhr_session.open("GET", url_session, true);
+			xhr_session.setRequestHeader("Content-type", "application/x-www-form-urlencoded;charset=UTF-8");
+			xhr_session.withCredentials = true;
+			xhr_session.onreadystatechange = function() {
+			try {
+				if (this.readyState == 4 && this.status == 200) {
+					venraastool.doCookieSetup("vensession", this.responseText, 1800000);
+					ven_session = this.responseText;
+
+					//get recomd
+					var url_recomd = "https://" + venstrob.strDhermesHost + venstrob.strDHermesApi;
+					paramJson.ven_guid = ven_guid;
+					paramJson.ven_session = ven_session;
+
+					var xhr_recomd = venraastool.xhr();
+					xhr_recomd.open("POST", url_recomd, true);
+					xhr_recomd.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+					xhr_recomd.withCredentials = true;
+					xhr_recomd.onreadystatechange = function() {
+					try {
+						if (this.readyState == 4 && this.status == 200) {
+							venraastool.saveLocalStorage(paramJson, this.responseText);
+							cbf(this.responseText, paramJson);
+						}
+					}
+					catch(e) {
+						console.log(e.message);
+					}
+					};
+
+					xhr_recomd.timeout = 2000;
+					xhr_recomd.ontimeout = function(e) {
+						var lastRespText = venraastool.getLocalStorage(paramJson);
+						if (lastRespText) {
+							console.log('venraas recomd timeout! response the last result');
+						}
+						else {
+							lastRespText = {};
+							console.log('venraas recomd timeout! none of the last result');
+						}
+
+						cbf(lastRespText, paramJson);
+					}
+
+					var jsonStr = JSON.stringify(paramJson);
+					xhr_recomd.send(jsonStr);
+				}
+			}
+			catch(e) {}
+			};
+			xhr_session.send();
+
+			return;
+		}
+
+		console.log("debug in venguid & vensession are exist");
+		//get recomd
+		var url_recomd = "https://" + venstrob.strDhermesHost + venstrob.strDHermesApi;
+		paramJson.ven_guid = ven_guid;
+		paramJson.ven_session = ven_session;
+
+		var xhr_recomd = venraastool.xhr();
+		xhr_recomd.open("POST", url_recomd, true);
+		xhr_recomd.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+		xhr_recomd.withCredentials = true;
+		xhr_recomd.onreadystatechange = function() {
+		try {
+			if (this.readyState == 4 && this.status == 200) {
+				venraastool.saveLocalStorage(paramJson, this.responseText);
+				cbf(this.responseText, paramJson);
 			}
 		}
-		
-		if(typeof venfloctl !== 'undefined'){
-			var venfloctl_size = venraastool.object_size(venfloctl);
-			venfloctl[venfloctl_size]={};
-			venfloctl[venfloctl_size]["status"]=false;
-			venfloctl[venfloctl_size]["contr"]="";
-			venfloctl[venfloctl_size]["venact"]="";
-			venfloctl[venfloctl_size]["objv"]={param:paramObj, callback:cbf};
-			venfloctl[venfloctl_size]["type"]=venstrob.strtypeRecomd;
-			venfloctl[venfloctl_size]["retry"]=0;
-			venraas.ven_cps(venfloctl_size);
+		catch(e) {
+			console.log(e.message);
 		}
+		};
+
+		xhr_recomd.timeout = 2000;
+		xhr_recomd.ontimeout = function(e) {
+			if (lastRespText) {
+				console.log('venraas recomd timeout! response the last result');
+			}
+			else {
+				lastRespText = {};
+				console.log('venraas recomd timeout! none of the last result');
+			}
+
+			cbf(lastRespText, paramJson);
+		}
+
+		var jsonStr = JSON.stringify(paramJson);
+		xhr_recomd.send(jsonStr);
 	},
 	goods_keywords: function(paramObj, cbf) {
 		var venraasxhr = venraastool.xhr();
@@ -408,12 +585,12 @@ var vencontrob = {
 		this.setpdata(venact,'c_utma',venraastool.getcookie('__utma'));*/
 		this.setpdata(venact,'ver',venstrob.v);
 		var from_rec = this.getpdata(venact, 'from_rec');
-                if (! from_rec || "null" == from_rec) {
+		if (! from_rec || "null" == from_rec) {
 			from_rec = venraastool.get_paramValFromURL('from_rec', location.href);
-                        if (from_rec) {
-                                this.setpdata(venact, 'from_rec', from_rec);
-                        }
-                }
+			if (from_rec) {
+				this.setpdata(venact, 'from_rec', from_rec);
+			}
+		}
 	},
 	pdata: new Object(),
 	creadata: function(_i){
@@ -535,7 +712,6 @@ function vengujsonpcallbk(type,data){
 		}
 	}
 	catch(e){}
-
 };
 
 /*application interface of venraas usage*/
@@ -574,7 +750,7 @@ var venraas = {
 				}
 			}
 
-			//-- set ven_guid if not exists
+			//set ven_guid if not exists
 			if(venraastool.getcookie("venguid") == ""){
 				if(typeof venfloctl !== 'undefined'){
 					var venfloctl_size= venraastool.object_size(venfloctl);
@@ -645,7 +821,6 @@ var venraas = {
 			//send log
 			//console.log('debug in action controller');
 			vencontrob.actioncontroller(f_idx);
-
 		}
 	},
 	ven_cps: function(f_idx){
@@ -671,7 +846,6 @@ var venraas = {
 					default:
 						break;
 				}
-
 			} else{
 				//console.log('debug in ven_cps: '+f_idx+' '+ venfloctl[f_idx-1]["status"] );
 				if(venfloctl[f_idx]["retry"] < 3){
@@ -679,7 +853,6 @@ var venraas = {
 					//console.log('debug in ven_cps: setTimeout -'+f_idx +' count- '+venfloctl[f_idx]["retry"]);
 					setTimeout("venraas.ven_cps("+f_idx+")",100);
 				}
-
 			}
 		}
 		catch(e){}
