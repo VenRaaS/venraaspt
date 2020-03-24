@@ -1,7 +1,7 @@
 /*venraas string definition*/
 var venstrob = {
 	v: '1.6.3',
-	strserver: 'apid.venraas.tw',
+	strserver: 'apid.obdesign.com.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
 	stract: 'action',
@@ -22,9 +22,9 @@ var venstrob = {
 	strtypeSession:'4',
 	strtypeRecomd:'5',
 	venfloctl_processing:'',
-	strDhermesHost:'apih.venraas.tw',
+	strDhermesHost:'apih.obdesign.com.tw',
 	strDHermesApi:'/hermes/api/goods/rank',
-	strCupidHost:'apir.venraas.tw',
+	strCupidHost:'apir.obdesign.com.tw',
 	strCupidKeywordApi:'/cupid/api/goods/keywords'
 };
 var venfloctl = new Object();
