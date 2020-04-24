@@ -101,12 +101,12 @@ var venraastool = {
 			(window.location.protocol !== "file:" || !window.ActiveXObject)
 		) ?
 		function() {
-			console.log("debug in xhr=window.XMLHttpRequest()");
+			//console.log("debug in xhr=window.XMLHttpRequest()");
 			return new window.XMLHttpRequest();
 		} :
 		function() {
 			try {
-				console.log("debug in xhr=window.ActiveXObject(\"Microsoft.XMLHTTP\")");
+				//console.log("debug in xhr=window.ActiveXObject(\"Microsoft.XMLHTTP\")");
 				return new window.ActiveXObject("Microsoft.XMLHTTP");
 			} catch(e) {}
 		}
@@ -305,7 +305,7 @@ var venraastool = {
 	recomd: function(paramJson, cbf) {
 		var ven_guid = venraastool.getcookie("venguid");
 		if ("" == ven_guid) {
-			console.log("debug in venguid is not exist");
+			//console.log("debug in venguid is not exist");
 			//venguid not exist, vensession not exist!
 
 			//get guid
@@ -386,7 +386,7 @@ var venraastool = {
 
 		var ven_session = venraastool.getcookie("vensession");
 		if ("" == ven_session) {
-			console.log("debug in vensession is not exist");
+			//console.log("debug in vensession is not exist");
 			//vensession not exist
 			var url_session = "https://" + venstrob.strserver + venstrob.struuidapi + "?id=" + top.location.host + "&typ=s&pt=a";
 			var xhr_session = venraastool.xhr();
@@ -445,7 +445,7 @@ var venraastool = {
 			return;
 		}
 
-		console.log("debug in venguid & vensession are exist");
+		//console.log("debug in venguid & vensession are exist");
 		//get recomd
 		var url_recomd = "https://" + venstrob.strDhermesHost + venstrob.strDHermesApi;
 		paramJson.ven_guid = ven_guid;
