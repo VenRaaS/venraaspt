@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.6.3',
+	v: '1.6.4',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -469,6 +469,7 @@ var venraastool = {
 
 		xhr_recomd.timeout = 2000;
 		xhr_recomd.ontimeout = function(e) {
+			var lastRespText = venraastool.getLocalStorage(paramJson);
 			if (lastRespText) {
 				console.log('venraas recomd timeout! response the last result');
 			}
