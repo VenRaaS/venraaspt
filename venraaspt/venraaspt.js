@@ -250,7 +250,7 @@ var venraastool = {
 				console.log('venraas recomd timeout! response the last result');
 			}
 			else {
-				lastRespText = {};
+				//lastRespText = {};
 				console.log('venraas recomd timeout! none of the last result');
 			}
 			
@@ -361,7 +361,7 @@ var venraastool = {
 									console.log('venraas recomd timeout! response the last result');
 								}
 								else {
-									lastRespText = {};
+									//lastRespText = {};
 									console.log('venraas recomd timeout! none of the last result');
 								}
 
@@ -427,7 +427,7 @@ var venraastool = {
 							console.log('venraas recomd timeout! response the last result');
 						}
 						else {
-							lastRespText = {};
+							//lastRespText = {};
 							console.log('venraas recomd timeout! none of the last result');
 						}
 
@@ -474,7 +474,7 @@ var venraastool = {
 				console.log('venraas recomd timeout! response the last result');
 			}
 			else {
-				lastRespText = {};
+				//lastRespText = {};
 				console.log('venraas recomd timeout! none of the last result');
 			}
 
