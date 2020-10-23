@@ -1,6 +1,6 @@
 /*venraas string definition*/
 var venstrob = {
-	v: '1.6.4',
+	v: '1.6.5',
 	strserver: 'apid.venraas.tw',
 	struuidapi:'/venapis/vengu',
 	strlogapi: '/venapis/log',
@@ -114,7 +114,7 @@ var venraastool = {
 	getvenuuid: function(type, f_idx){
 		var venraasxhr;
 		try{
-			var _param="?id="+top.location.host+"&typ="+type+'&pt=a';
+			var _param="?id="+location.host+"&typ="+type+'&pt=a';
 
 			if(window.XDomainRequest && (navigator.userAgent.indexOf("MSIE 8.0")>0 || navigator.userAgent.indexOf("MSIE 9.0")>0) ){
 				venstrob.venfloctl_processing = f_idx;
@@ -309,7 +309,7 @@ var venraastool = {
 			//venguid not exist, vensession not exist!
 
 			//get guid
-			var url_guid = "https://" + venstrob.strserver + venstrob.struuidapi + "?id=" + top.location.host + "&typ=g&pt=a";
+			var url_guid = "https://" + venstrob.strserver + venstrob.struuidapi + "?id=" + location.host + "&typ=g&pt=a";
 			var xhr_guid = venraastool.xhr();
 			xhr_guid.open("GET", url_guid, true);
 			xhr_guid.setRequestHeader("Content-type","application/x-www-form-urlencoded;charset=UTF-8");
@@ -322,7 +322,7 @@ var venraastool = {
 					ven_guid = this.responseText;
 
 					//get session
-					var url_session = "https://" + venstrob.strserver + venstrob.struuidapi + "?id=" + top.location.host + "&typ=s&pt=a";
+					var url_session = "https://" + venstrob.strserver + venstrob.struuidapi + "?id=" + location.host + "&typ=s&pt=a";
 					var xhr_session = venraastool.xhr();
 					xhr_session.open("GET", url_session, true);
 					xhr_session.setRequestHeader("Content-type", "application/x-www-form-urlencoded;charset=UTF-8");
@@ -388,7 +388,7 @@ var venraastool = {
 		if ("" == ven_session) {
 			//console.log("debug in vensession is not exist");
 			//vensession not exist
-			var url_session = "https://" + venstrob.strserver + venstrob.struuidapi + "?id=" + top.location.host + "&typ=s&pt=a";
+			var url_session = "https://" + venstrob.strserver + venstrob.struuidapi + "?id=" + location.host + "&typ=s&pt=a";
 			var xhr_session = venraastool.xhr();
 			xhr_session.open("GET", url_session, true);
 			xhr_session.setRequestHeader("Content-type", "application/x-www-form-urlencoded;charset=UTF-8");
@@ -572,7 +572,7 @@ var vencontrob = {
 		this.setpdata(venact,'uri',location.pathname);
 		this.setpdata(venact,'client_host',venstrob.strdn);
 		this.setpdata(venact,'token',venstrob.strtoken);
-		this.setpdata(venact,'tophost',top.location.host);
+		this.setpdata(venact,'tophost',location.host);
 		this.setpdata(venact,'referrer',document.referrer);
 		//IE 8 is not support Date().now()
 		try{
